@@ -1,0 +1,2488 @@
+<!DOCTYPE html>
+<!-- HTML5 belgesi tanımı -->
+<html lang="tr">
+<!-- Sayfa dili Türkçe olarak ayarlandı -->
+<head>
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#000000">
+    <!-- Sayfa başlığı ve meta bilgiler -->
+    <meta charset="UTF-8">
+    <!-- Karakter kodlaması UTF-8 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- Mobil cihazlar için responsive tasarım ayarı -->
+    <title>YKS Asistanı</title>
+    <!-- Sayfa başlığı -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome ikon kütüphanesi -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <!-- iOS web uygulaması özelliği -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <!-- iOS durum çubuğu stili -->
+    <meta name="theme-color" content="#1e40af">
+    <!-- Tema rengi -->
+    <link rel="stylesheet" href="style.css">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e40af">
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('service-worker.js');
+}
+</script>
+    <style>
+
+        :root {
+            /* CSS değişkenleri tanımları - Renk paleti ve genel ayarlar */
+            --primary: #1e40af; /* Ana canlı mavi renk - butonlar, linkler, vurgular için */
+            --secondary: #1e3a8a; /* İkincil koyu mavi - header, aktif durumlar için */
+            --accent: #06b6d4; /* Aksan rengi - ikonlar, özel vurgular için */
+            --light: #f8f9fa; /* Açık arka plan rengi - hafif alanlar için */
+            --dark: #212529; /* Koyu metin rengi - başlıklar ve metinler için */
+            --success: #4cc9f0; /* Başarı rengi - olumlu durumlar için */
+            --warning: #ffbe0b; /* Uyarı rengi - dikkat çekici durumlar için */
+            --danger: #ef476f; /* Tehlike rengi - hatalar, silme işlemleri için */
+            --tyt: #3b82f6; /* TYT sınav tipi rengi - temel eğitim vurgusu için */
+            --ayt: #8b5cf6; /* AYT sınav tipi rengi - ileri eğitim vurgusu için */
+            --safe-area-inset-top: env(safe-area-inset-top, 0px); /* iOS üst güvenli alan */
+            --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px); /* iOS alt güvenli alan */
+        }
+        
+        /* Genel sayfa stilleri - Tüm elementler için temel reset ve font ayarları */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Sayfa gövdesi stilleri - Ana sayfa arka planı ve genel düzen */
+        body {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); /* Beyaz gradient arka plan */
+            color: var(--dark); /* Koyu metin rengi */
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: var(--safe-area-inset-top) 0 var(--safe-area-inset-bottom) 0; /* iOS güvenli alan desteği */
+        }
+        
+        /* Ana konteyner - Sayfa içeriğini ortalar ve maksimum genişlik ayarlar */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        
+        /* Başlık bölümü - Ana sayfa başlığı için gradient arka plan ve stil */
+        header {
+            text-align: center;
+            padding: 20px 15px;
+            background: linear-gradient(135deg, #3003fa, #f8f9fa); /* Beyaz gradient */
+            color: var(--dark); /* Koyu metin rengi */
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transform: rotate(30deg);
+        }
+        
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 8px;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        /* Geri sayım konteyneri - Sınav tarihine kalan süreyi gösterir */
+        .countdown-container {
+            background-color: #fcfcfc; /* Beyaz arka plan */
+            padding: 20px 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e9ecef; /* İnce gri kenarlık */
+        }
+        
+        .countdown-container::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+        }
+        
+        #countdown {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .countdown-unit {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            padding: 12px 8px;
+            border-radius: 10px;
+            min-width: 70px;
+            min-height: 70px; /* Eşit yükseklik için minimum yükseklik */
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .countdown-unit:hover {
+            transform: translateY(-5px);
+        }
+        
+        .countdown-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+        
+        .countdown-label {
+            font-size: 0.8rem;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            align-items: stretch;
+        }
+        
+        /* Ana kartlar - Hedefler, çalışma planı gibi bölümler için */
+        .card {
+            background-color: #ffffff; /* Beyaz arka plan */
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+            border: 1px solid #e9ecef; /* İnce gri kenarlık */
+            min-height: 420px; /* Eşit yükseklik için minimum yükseklik */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+        }
+
+        .card > * {
+            width: 100%;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.3rem;
+        }
+        
+        .card h2 i {
+            color: var(--accent);
+        }
+        
+        .progress-container {
+            margin: 15px 0;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 6px;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 8px;
+            transition: width 0.5s ease;
+        }
+        
+        .subject-list {
+            list-style-type: none;
+        }
+        
+        .subject-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            text-align: center;
+        }
+        
+        /* Genel buton stili - Tüm butonlar için temel görünüm */
+        .btn {
+            background-color: var(--primary); /* Canlı mavi arka plan */
+            color: white; /* Beyaz metin */
+            border: none;
+            padding: 0 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            min-height: 50px;
+            width: 100%;
+            max-width: 220px;
+            touch-action: manipulation;
+            margin: 0 auto;
+        }
+
+        .btn + .btn,
+        .card .btn + .btn {
+            margin-top: 12px;
+        }
+
+        .btn-sm {
+            padding: 0 14px;
+            font-size: 0.95rem;
+            min-height: 46px;
+            min-width: 120px;
+            max-width: 140px;
+            width: auto;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary); /* Daha koyu mavi */
+            transform: translateY(-2px);
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        
+        .btn-sm {
+            padding: 10px 14px;
+            font-size: 0.9rem;
+            min-height: 40px;
+            min-width: 40px;
+            max-width: 150px; /* Küçük buton için maksimum genişlik */
+        }
+        
+        .btn-tyt {
+            background-color: var(--tyt);
+        }
+        
+        .btn-ayt {
+            background-color: var(--ayt);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger);
+        }
+        
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: border-color 0.3s;
+            font-size: 16px; /* iOS zoom'u önlemek için */
+            min-height: 44px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .motivation {
+            text-align: center;
+            font-style: italic;
+            margin: 15px 0;
+            color: var(--secondary);
+            font-size: 0.95rem;
+            padding: 12px;
+            background-color: rgba(67, 97, 238, 0.1);
+            border-radius: 8px;
+        }
+        
+        /* Sayfa alt bilgisi - Telif hakkı ve genel bilgiler */
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            color: var(--dark);
+            font-size: 0.85rem;
+            background-color: #ffffff; /* Beyaz arka plan */
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            border: 1px solid #e9ecef; /* İnce gri kenarlık */
+        }
+        
+        /* İstatistik kartları grid düzeni - Ana sayfa istatistiklerini gösterir */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+        
+        /* İstatistik kartı - Tek bir istatistik değerini gösterir */
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); /* Beyaz gradient arka plan */
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef; /* Gri kenarlık */
+            min-height: 80px; /* Eşit yükseklik için minimum yükseklik */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 8px 0;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.75rem;
+        }
+        
+        .completed {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+        
+        .tab-container {
+            margin: 15px 0;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 12px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .tab {
+            padding: 12px 16px;
+            background-color: #e9ecef;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+            font-size: 0.9rem;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .badge {
+            padding: 5px 8px;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+        
+        .badge-tyt {
+            background-color: var(--tyt);
+            color: white;
+        }
+        
+        .badge-ayt {
+            background-color: var(--ayt);
+            color: white;
+        }
+        
+        .daily-target-form {
+            background-color: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        
+        .form-row label {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .exam-type-btns {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .exam-type-btn {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .exam-type-btn.active {
+            border-color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.1);
+            font-weight: bold;
+        }
+        
+        .tyt-active {
+            border-color: var(--tyt);
+            background-color: rgba(114, 9, 183, 0.1);
+        }
+        
+        .ayt-active {
+            border-color: var(--ayt);
+            background-color: rgba(247, 37, 133, 0.1);
+        }
+        
+        .resource-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+            min-height: 44px;
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .delete-btn:hover {
+            transform: scale(1.2);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: var(--safe-area-inset-top) 0 var(--safe-area-inset-bottom) 0;
+        }
+        
+        .modal-content {
+            background-color: #ffffff; /* Beyaz arka plan */
+            padding: 20px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-height: 80vh;
+            overflow-y: auto;
+            margin: 20px;
+            border: 1px solid #e9ecef; /* İnce gri kenarlık */
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6c757d;
+            min-height: 44px;
+            min-width: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .distribution-page {
+            display: none;
+            padding: 15px;
+        }
+        
+        .back-button {
+            margin-bottom: 15px;
+            background-color: var(--secondary);
+        }
+        
+        .distribution-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+          .distribution-card {
+            background-color: #ffffff; /* Beyaz arka plan */
+            border-radius: 18px;
+            padding: 20px;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef; /* İnce gri kenarlık */
+            min-height: 320px; /* Eşit yükseklik için minimum yükseklik */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            text-align: center;
+            flex-direction: column;
+        }
+        
+        .distribution-card h3 {
+            color: var(--primary);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #eee;
+            font-size: 1.1rem;
+        }
+        
+        .chart-container {
+            height: 180px;
+            margin: 12px 0;
+            position: relative;
+        }
+        
+        .chart-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .chart-bar-label {
+            width: 80px;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        
+        .chart-bar-track {
+            flex-grow: 1;
+            height: 16px;
+            background-color: #e9ecef;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 0 8px;
+        }
+        
+        .chart-bar-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 8px;
+        }
+        
+        .chart-bar-value {
+            width: 50px;
+            text-align: right;
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 0.85rem;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            padding: 12px 16px;
+            background-color: var(--success);
+            color: white;
+            border-radius: 6px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.3s, transform 0.3s;
+            max-width: 300px;
+        }
+        
+        .notification.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .reset-section {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 2px solid #eee;
+            text-align: center;
+        }
+        
+        /* iOS input reset */
+        input {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+        
+        /* Özel checkbox stilleri */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        
+        .checkbox-container input {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            height: 0;
+            width: 0;
+        }
+        
+        .checkmark {
+            height: 22px;
+            width: 22px;
+            background-color: #f8f9fa;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .checkbox-container input:checked ~ .checkmark {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+        
+        .checkmark:after {
+            content: "";
+            display: none;
+        }
+        
+        .checkbox-container input:checked ~ .checkmark:after {
+            display: block;
+        }
+        
+        .checkbox-container .checkmark:after {
+            width: 5px;
+            height: 10px;
+            border: solid white;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+            margin-top: -2px;
+        }
+        
+        .target-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+        
+        .target-text {
+            flex: 1;
+            margin-right: 10px;
+        }
+        
+        .target-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Doğru/Yanlış/Boş Stilleri */
+        .question-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .stat-input-group label {
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .stat-input {
+            text-align: center;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        .correct-input {
+            border-color: var(--success);
+            color: var(--success);
+        }
+        
+        .incorrect-input {
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+        
+        .empty-input {
+            border-color: var(--warning);
+            color: var(--warning);
+        }
+        
+        /* Doughnut Chart Stilleri */
+        .doughnut-chart {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: conic-gradient(
+                var(--success) 0% 0%,
+                var(--danger) 0% 0%,
+                var(--warning) 0% 0%,
+                #e9ecef 0% 100%
+            );
+            margin: 0 auto;
+            position: relative;
+        }
+        
+        .doughnut-center {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            top: 25px;
+            left: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .doughnut-total {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .doughnut-label {
+            font-size: 0.7rem;
+            color: #6c757d;
+        }
+        
+        .doughnut-legend {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        
+        .legend-correct {
+            background-color: var(--success);
+        }
+        
+        .legend-incorrect {
+            background-color: var(--danger);
+        }
+        
+        .legend-empty {
+            background-color: var(--warning);
+        }
+        
+        /* Performans İstatistikleri */
+        .performance-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .performance-card {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            min-height: 60px; /* Eşit yükseklik için minimum yükseklik */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .performance-value {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .performance-label {
+            font-size: 0.7rem;
+            color: #6c757d;
+        }
+        
+        /* Detaylı İstatistikler Bölümü */
+        .detailed-stats {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .detailed-stats h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        .stats-table th, .stats-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stats-table th {
+            font-weight: 600;
+            color: var(--primary);
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+        
+        .stats-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .subject-performance {
+            font-weight: 500;
+        }
+        
+        .progress-cell {
+            width: 40%;
+        }
+        
+        .mini-progress {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .mini-progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            border-radius: 4px;
+        }
+        
+        /* Günlük Sıfırlama Bilgisi */
+        .reset-info {
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #6c757d;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        /* Tablet ve daha büyük ekranlar için */
+        @media (min-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            header {
+                padding: 25px 0;
+                border-radius: 15px;
+                margin-bottom: 30px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .header-subtitle {
+                font-size: 1rem;
+            }
+            
+            .countdown-container {
+                padding: 25px;
+                border-radius: 15px;
+                margin-bottom: 25px;
+            }
+            
+            .countdown-unit {
+                padding: 20px;
+                min-width: 100px;
+            }
+            
+            .countdown-value {
+                font-size: 2.2rem;
+            }
+            
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 25px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 15px;
+            }
+            
+            .form-row {
+                flex-direction: row;
+                align-items: center;
+            }
+            
+            .form-row label {
+                min-width: 100px;
+            }
+            
+            .distribution-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .performance-stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
+        /* Büyük ekranlar için */
+        @media (min-width: 1024px) {
+            .grid-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .countdown-value {
+                font-size: 2.5rem;
+            }
+        }
+        
+        /* Küçük ekranlar için ek ayarlar */
+        @media (max-width: 380px) {
+            .countdown-unit {
+                min-width: 60px;
+                padding: 10px 5px;
+                min-height: 60px; /* Mobil için daha küçük eşit yükseklik */
+            }
+            
+            .countdown-value {
+                font-size: 1.5rem;
+            }
+            
+            .countdown-label {
+                font-size: 0.7rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .target-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .target-actions {
+                margin-top: 8px;
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .performance-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-table {
+                font-size: 0.8rem;
+            }
+            
+            .stats-table th, .stats-table td {
+                padding: 8px 5px;
+            }
+            
+            /* Mobil iyileştirmeler */
+            .btn {
+                padding: 14px 18px;
+                font-size: 1.1rem;
+                min-height: 48px;
+                min-width: 48px;
+                max-width: 180px; /* Mobil için daha küçük maksimum genişlik */
+            }
+            
+            .btn-sm {
+                padding: 12px 16px;
+                font-size: 1rem;
+                min-height: 44px;
+                min-width: 44px;
+            }
+            
+            input[type="text"], input[type="number"], select {
+                font-size: 16px;
+                min-height: 48px;
+                padding: 16px;
+            }
+            
+            .card {
+                padding: 16px 12px;
+                min-height: 280px; /* Mobil için biraz daha küçük minimum yükseklik */
+            }
+            
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 16px 12px;
+                margin-bottom: 16px;
+            }
+            
+            h1 {
+                font-size: 1.6rem;
+            }
+            
+            .header-subtitle {
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* Yatay mod için ayarlamalar */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .container {
+                padding: 10px;
+            }
+            
+            header {
+                padding: 15px 0;
+                margin-bottom: 15px;
+            }
+            
+            .countdown-container {
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .grid-container {
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .card {
+                padding: 15px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Ana Sayfa -->
+    <div class="container main-page">
+        <header>
+            <h1><i class="fas fa-graduation-cap"></i> YKS Asistanı</h1>
+            <p class="header-subtitle">20 Haziran 2026, 10:15'e kadar olan yolculuğunuz</p>
+        </header>
+        
+        <div class="countdown-container">
+            <h2><i class="fas fa-hourglass-half"></i> Sınavınıza Kalan Süre</h2>
+            <div id="countdown">
+                <div class="countdown-unit">
+                    <div class="countdown-value" id="days">0</div>
+                    <div class="countdown-label">Gün</div>
+                </div>
+                <div class="countdown-unit">
+                    <div class="countdown-value" id="hours">0</div>
+                    <div class="countdown-label">Saat</div>
+                </div>
+                <div class="countdown-unit">
+                    <div class="countdown-value" id="minutes">0</div>
+                    <div class="countdown-label">Dakika</div>
+                </div>
+                <div class="countdown-unit">
+                    <div class="countdown-value" id="seconds">0</div>
+                    <div class="countdown-label">Saniye</div>
+                </div>
+            </div>
+            <p class="motivation" id="motivation-text">Hedeflerine ulaşmak için çalışmaya devam et!</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Toplam Çözülen Soru</div>
+                <div class="stat-value" id="total-questions">0</div>
+                <div class="stat-label">Hedef: 50.000</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Günlük Ortalama</div>
+                <div class="stat-value" id="daily-average">0</div>
+                <div class="stat-label">Hedef: <span id="daily-target-value">100</span></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Tamamlanan Hedefler</div>
+                <div class="stat-value" id="completed-targets">0%</div>
+                <div class="stat-label">İlerleme</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Kalan Süre</div>
+                <div class="stat-value" id="remaining-days">0</div>
+                <div class="stat-label">Gün</div>
+            </div>
+        </div>
+        
+        <div class="grid-container">
+            <!-- Hedefler Kartı -->
+            <div class="card">
+                <h2><i class="fas fa-bullseye"></i> Hedeflerim</h2>
+                <div class="progress-container">
+                    <p>Genel İlerleme</p>
+                    <div class="progress-bar">
+                        <div class="progress" id="overall-progress" style="width: 0%"></div>
+                    </div>
+                    <span id="progress-text">%0</span>
+                </div>
+                
+                <div class="daily-target-form">
+                    <h3><i class="fas fa-calendar-day"></i> Günlük Hedefler</h3>
+                    <div class="form-row">
+                        <label for="daily-question-target">Soru Hedefi:</label>
+                        <input type="number" id="daily-question-target" value="100" min="1">
+                    </div>
+                    <div class="form-row">
+                        <label for="daily-study-target">Çalışma Saati:</label>
+                        <input type="number" id="daily-study-target" value="5" min="1" step="0.5">
+                    </div>
+                    <button class="btn" onclick="updateDailyGoals()"><i class="fas fa-save"></i> Hedefleri Güncelle</button>
+                </div>
+                
+                <div>
+                    <input type="text" id="new-target" placeholder="Yeni hedef ekle (Örn: TYT Matematik konularını bitir)">
+                    <button class="btn" onclick="addTarget()"><i class="fas fa-plus"></i> Ekle</button>
+                </div>
+                
+                <ul class="subject-list" id="targets-list">
+                    <!-- Hedefler buraya eklenecek -->
+                </ul>
+            </div>
+            
+            <!-- Çalışma Planı Kartı -->
+            <div class="card">
+                <h2><i class="fas fa-book"></i> Çalışma Planı</h2>
+                <p>Günlük çalışma hedefi: <strong><span id="daily-study-goal">5</span> saat</strong></p>
+                <div class="progress-container">
+                    <p>Bugün: <span id="studied-hours">0</span> / <span id="target-hours">5</span> saat</p>
+                    <div class="progress-bar">
+                        <div class="progress" id="study-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div>
+                    <input type="number" id="add-hours" placeholder="Çalışılan saat" min="0.5" step="0.5">
+                    <button class="btn" onclick="addStudyHours()"><i class="fas fa-clock"></i> Ekle</button>
+                </div>
+                
+                <div class="reset-info">
+                    <i class="fas fa-info-circle"></i> Günlük veriler her gece 00:00'da sıfırlanır
+                </div>
+                
+                <div class="tab-container">
+                    <div class="tabs">
+                        <div class="tab active" onclick="switchTab('subjects')">Konularım</div>
+                        <div class="tab" onclick="switchTab('resources')">Kaynaklar</div>
+                        <div class="tab" onclick="switchTab('add-resource')"><i class="fas fa-plus"></i></div>
+                    </div>
+                    
+                    <div id="subjects" class="tab-content active">
+                        <div>
+                            <input type="text" id="new-subject" placeholder="Yeni çalışma konusu ekle (Örn: Matematik - Türev)">
+                            <button class="btn" onclick="addSubject()"><i class="fas fa-plus"></i> Ekle</button>
+                        </div>
+                        <ul class="subject-list" id="subjects-list">
+                            <!-- Konular buraya eklenecek -->
+                        </ul>
+                        <div class="reset-info">
+                            <i class="fas fa-info-circle"></i> Konular günlük 00:00'da sıfırlanır
+                        </div>
+                    </div>
+                    
+                    <div id="resources" class="tab-content">
+                        <ul class="subject-list" id="resources-list">
+                            <!-- Kaynaklar buraya eklenecek -->
+                        </ul>
+                    </div>
+                    
+                    <div id="add-resource" class="tab-content">
+                        <div>
+                            <select id="resource-type">
+                                <option value="Kitap">Kitap</option>
+                                <option value="Video">Video Ders</option>
+                                <option value="Deneme">Deneme Sınavı</option>
+                                <option value="Not">Ders Notu</option>
+                            </select>
+                            <input type="text" id="resource-name" placeholder="Kaynak adı">
+                            <input type="text" id="resource-subject" placeholder="Ders/konu">
+                            <div class="exam-type-btns">
+                                <div class="exam-type-btn active" id="resource-tyt-btn" onclick="selectResourceExamType('tyt')">
+                                    TYT
+                                </div>
+                                <div class="exam-type-btn" id="resource-ayt-btn" onclick="selectResourceExamType('ayt')">
+                                    AYT
+                                </div>
+                            </div>
+                            <button class="btn" onclick="addResource()"><i class="fas fa-plus"></i> Kaynak Ekle</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Soru Takibi Kartı -->
+            <div class="card">
+                <h2><i class="fas fa-tasks"></i> Soru Takibi</h2>
+                <p>Günlük soru çözme hedefi: <strong><span id="daily-question-goal">100</span> soru</strong></p>
+                <div class="progress-container">
+                    <p>Bugün: <span id="solved-today">0</span> / <span id="daily-target">100</span> soru</p>
+                    <div class="progress-bar">
+                        <div class="progress" id="question-progress" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <!-- DOĞRU/YANLIŞ/BOŞ BÖLÜMÜ -->
+                <div class="question-stats">
+                    <div class="stat-input-group">
+                        <label for="correct-questions">Doğru Sayısı</label>
+                        <input type="number" id="correct-questions" class="stat-input correct-input" min="0" value="0">
+                    </div>
+                    <div class="stat-input-group">
+                        <label for="incorrect-questions">Yanlış Sayısı</label>
+                        <input type="number" id="incorrect-questions" class="stat-input incorrect-input" min="0" value="0">
+                    </div>
+                    <div class="stat-input-group">
+                        <label for="empty-questions">Boş Sayısı</label>
+                        <input type="number" id="empty-questions" class="stat-input empty-input" min="0" value="0">
+                    </div>
+                </div>
+                
+                <div class="exam-type-btns">
+                    <div class="exam-type-btn active" id="tyt-btn" onclick="selectExamType('tyt')">
+                        TYT
+                    </div>
+                    <div class="exam-type-btn" id="ayt-btn" onclick="selectExamType('ayt')">
+                        AYT
+                    </div>
+                </div>
+                
+                <div>
+                    <select id="question-subject">
+                        <option value="Matematik">Matematik</option>
+                        <option value="Türkçe">Türkçe</option>
+                        <option value="Fizik">Fizik</option>
+                        <option value="Kimya">Kimya</option>
+                        <option value="Biyoloji">Biyoloji</option>
+                        <option value="Tarih">Tarih</option>
+                        <option value="Coğrafya">Coğrafya</option>
+                        <option value="Felsefe">Felsefe</option>
+                    </select>
+                    <button class="btn" onclick="addQuestions()"><i class="fas fa-plus-circle"></i> Soru Ekle</button>
+                </div>
+                
+                <div class="reset-info">
+                    <i class="fas fa-info-circle"></i> Günlük soru sayısı her gece 00:00'da sıfırlanır
+                </div>
+                
+                <!-- DOĞRU/YANLIŞ GRAFİĞİ -->
+                <div style="margin-top: 20px;">
+                    <h3><i class="fas fa-chart-pie"></i> Performans Analizi</h3>
+                    <div class="doughnut-chart" id="performance-chart">
+                        <div class="doughnut-center">
+                            <div class="doughnut-total" id="chart-total">0</div>
+                            <div class="doughnut-label">Toplam</div>
+                        </div>
+                    </div>
+                    <div class="doughnut-legend">
+                        <div class="legend-item">
+                            <div class="legend-color legend-correct"></div>
+                            <span>Doğru: <span id="legend-correct">0</span></span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-incorrect"></div>
+                            <span>Yanlış: <span id="legend-incorrect">0</span></span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-empty"></div>
+                            <span>Boş: <span id="legend-empty">0</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="performance-stats">
+                        <div class="performance-card">
+                            <div class="performance-value" id="net-value">0</div>
+                            <div class="performance-label">Net</div>
+                        </div>
+                        <div class="performance-card">
+                            <div class="performance-value" id="accuracy-value">0%</div>
+                            <div class="performance-label">Doğruluk</div>
+                        </div>
+                        <div class="performance-card">
+                            <div class="performance-value" id="correct-ratio">0%</div>
+                            <div class="performance-label">Doğru Oranı</div>
+                        </div>
+                        <div class="performance-card">
+                            <div class="performance-value" id="incorrect-ratio">0%</div>
+                            <div class="performance-label">Yanlış Oranı</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DETAYLI İSTATİSTİKLER -->
+                <div class="detailed-stats">
+                    <h3><i class="fas fa-chart-bar"></i> Detaylı İstatistikler</h3>
+                    <div class="stats-table-container">
+                        <table class="stats-table">
+                            <thead>
+                                <tr>
+                                    <th>Ders</th>
+                                    <th>Toplam</th>
+                                    <th>Doğru</th>
+                                    <th>Yanlış</th>
+                                    <th>Boş</th>
+                                    <th>Başarı</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailed-stats-body">
+                                <!-- Detaylı istatistikler buraya eklenecek -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="reset-section">
+                    <button class="btn btn-danger" onclick="showResetModal()"><i class="fas fa-trash"></i> Tüm Verileri Sıfırla</button>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>YKS Başarılar Dileriz! <i class="fas fa-heart" style="color: var(--accent);"></i></p>
+        </footer>
+    </div>
+
+    <!-- Derslere Göre Dağılım Sayfası -->
+    <div class="container distribution-page" id="distribution-page">
+        <button class="btn back-button" onclick="goBackToMainPage()"><i class="fas fa-arrow-left"></i> Geri Dön</button>
+        
+        <header>
+            <h1><i class="fas fa-chart-bar"></i> Derslere Göre Dağılım</h1>
+            <p class="header-subtitle">Soru çözüm istatistiklerinizin detaylı analizi</p>
+        </header>
+        
+        <div class="distribution-grid">
+            <div class="distribution-card">
+                <h3>TYT Soru Dağılımı</h3>
+                <div class="chart-container" id="tyt-chart">
+                    <!-- TYT grafik çubukları buraya eklenecek -->
+                </div>
+            </div>
+            
+            <div class="distribution-card">
+                <h3>AYT Soru Dağılımı</h3>
+                <div class="chart-container" id="ayt-chart">
+                    <!-- AYT grafik çubukları buraya eklenecek -->
+                </div>
+            </div>
+            
+            <div class="distribution-card">
+                <h3>Genel İstatistikler</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Toplam TYT Soru</div>
+                        <div class="stat-value" id="total-tyt-questions">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Toplam AYT Soru</div>
+                        <div class="stat-value" id="total-ayt-questions">0</div>
+                    </div>
+                </div>
+                <div class="progress-container">
+                    <p>TYT/AYT Oranı</p>
+                    <div class="progress-bar">
+                        <div class="progress" id="tyt-ayt-ratio" style="width: 50%"></div>
+                    </div>
+                    <span id="ratio-text">%50 TYT - %50 AYT</span>
+                </div>
+            </div>
+            
+            <div class="distribution-card">
+                <h3>En Çok Çözülen Dersler</h3>
+                <ul class="subject-list" id="top-subjects">
+                    <!-- En çok çözülen dersler buraya eklenecek -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sıfırlama Onay Modal -->
+    <div class="modal" id="reset-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Verileri Sıfırla</h3>
+                <button class="close-modal" onclick="closeModal('reset-modal')">&times;</button>
+            </div>
+            <p>Tüm verilerinizi sıfırlamak istediğinize emin misiniz? Bu işlem geri alınamaz.</p>
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="btn" onclick="closeModal('reset-modal')">İptal</button>
+                <button class="btn btn-danger" onclick="resetAllData()">Evet, Sıfırla</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bildirim -->
+    <div class="notification" id="notification"></div>
+
+    <script>
+        // === DEĞİŞKEN TANIMLARI ===
+        // Mevcut sınav tipi (TYT veya AYT) - Soru ekleme ve filtreleme için kullanılır
+        let currentExamType = 'tyt';
+        // Kaynak ekleme için sınav tipi - Kaynak ekleme formunda seçili tip
+        let currentResourceExamType = 'tyt';
+        // Günlük soru hedefi - Kullanıcının günlük çözmesi gereken soru sayısı
+        let dailyQuestionTarget = 100;
+        // Günlük çalışma saati hedefi - Kullanıcının günlük çalışma hedefi
+        let dailyStudyTarget = 5;
+        // Toplam doğru sayı - Tüm zamanların toplam doğru sayısı
+        let totalCorrect = 0;
+        // Toplam yanlış sayı - Tüm zamanların toplam yanlış sayısı
+        let totalIncorrect = 0;
+        // Toplam boş sayı - Tüm zamanların toplam boş sayısı
+        let totalEmpty = 0;
+        // Son günlük sıfırlama tarihi - Günlük verilerin sıfırlanma tarihi
+        let lastResetDate = new Date().toDateString(); // Bugünün tarihi
+        
+        // Günlük çalışma konuları - Her gün sıfırlanır
+        let dailySubjects = [];
+        
+        // Derslere göre soru istatistikleri - Her ders için doğru/yanlış/boş sayılarını tutar
+        let questionStats = {
+            'tyt': {
+                'Matematik': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Türkçe': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Fizik': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Kimya': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Biyoloji': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Tarih': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Coğrafya': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Felsefe': { total: 0, correct: 0, incorrect: 0, empty: 0 }
+            },
+            'ayt': {
+                'Matematik': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Edebiyat': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Fizik': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Kimya': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Biyoloji': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Tarih': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Coğrafya': { total: 0, correct: 0, incorrect: 0, empty: 0 },
+                'Felsefe': { total: 0, correct: 0, incorrect: 0, empty: 0 }
+            }
+        };
+        
+        // === FONKSİYONLAR ===
+        // Günlük verileri kontrol et ve gerekiyorsa sıfırla - Her dakika çalışır
+        function checkAndResetDailyData() {
+            const today = new Date().toDateString();
+            
+            // Eğer yeni bir gün başladıysa
+            if (today !== lastResetDate) {
+                // Günlük verileri sıfırla
+                document.getElementById('solved-today').textContent = '0';
+                document.getElementById('studied-hours').textContent = '0';
+                
+                // Doğru/yanlış/boş alanlarını sıfırla
+                document.getElementById('correct-questions').value = '0';
+                document.getElementById('incorrect-questions').value = '0';
+                document.getElementById('empty-questions').value = '0';
+                
+                // Konuları sıfırla
+                document.getElementById('subjects-list').innerHTML = '';
+                dailySubjects = [];
+                
+                // İlerleme çubuklarını güncelle
+                updateProgressBars();
+                
+                // Tarihi güncelle
+                lastResetDate = today;
+                
+                // localStorage'a kaydet
+                saveToLocalStorage();
+                
+                // Kullanıcıya bilgi ver
+                showNotification('Yeni gün! Günlük hedefler ve konular sıfırlandı. Bugünkü çalışmaya başla!');
+            }
+        }
+        
+        // Her dakika günlük verileri kontrol et
+        setInterval(checkAndResetDailyData, 60000); // 1 dakikada bir kontrol et
+        
+        // Detaylı istatistikleri güncelle
+        function updateDetailedStats() {
+            const statsBody = document.getElementById('detailed-stats-body');
+            statsBody.innerHTML = '';
+            
+            // TYT dersleri için istatistikler
+            for (const subject in questionStats.tyt) {
+                if (questionStats.tyt[subject].total > 0) {
+                    const stats = questionStats.tyt[subject];
+                    const successRate = stats.correct > 0 ? ((stats.correct / stats.total) * 100).toFixed(1) : 0;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="subject-performance">TYT ${subject}</td>
+                        <td>${stats.total}</td>
+                        <td>${stats.correct}</td>
+                        <td>${stats.incorrect}</td>
+                        <td>${stats.empty}</td>
+                        <td>${successRate}%</td>
+                    `;
+                    statsBody.appendChild(row);
+                }
+            }
+            
+            // AYT dersleri için istatistikler
+            for (const subject in questionStats.ayt) {
+                if (questionStats.ayt[subject].total > 0) {
+                    const stats = questionStats.ayt[subject];
+                    const successRate = stats.correct > 0 ? ((stats.correct / stats.total) * 100).toFixed(1) : 0;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td class="subject-performance">AYT ${subject}</td>
+                        <td>${stats.total}</td>
+                        <td>${stats.correct}</td>
+                        <td>${stats.incorrect}</td>
+                        <td>${stats.empty}</td>
+                        <td>${successRate}%</td>
+                    `;
+                    statsBody.appendChild(row);
+                }
+            }
+            
+            // Toplam satırı ekle
+            if (totalCorrect + totalIncorrect + totalEmpty > 0) {
+                const totalSuccessRate = totalCorrect > 0 ? ((totalCorrect / (totalCorrect + totalIncorrect + totalEmpty)) * 100).toFixed(1) : 0;
+                
+                const totalRow = document.createElement('tr');
+                totalRow.style.fontWeight = 'bold';
+                totalRow.style.backgroundColor = '#f8f9fa';
+                totalRow.innerHTML = `
+                    <td class="subject-performance">TOPLAM</td>
+                    <td>${totalCorrect + totalIncorrect + totalEmpty}</td>
+                    <td>${totalCorrect}</td>
+                    <td>${totalIncorrect}</td>
+                    <td>${totalEmpty}</td>
+                    <td>${totalSuccessRate}%</td>
+                `;
+                statsBody.appendChild(totalRow);
+            }
+        }
+        
+        // Bildirim göster
+        function showNotification(message, isSuccess = true) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.style.backgroundColor = isSuccess ? 'var(--success)' : 'var(--danger)';
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+        
+        // Modal göster
+        function showResetModal() {
+            document.getElementById('reset-modal').style.display = 'flex';
+        }
+        
+        // Modal kapat
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+        
+        // Tüm verileri sıfırla
+        function resetAllData() {
+            // Soru istatistiklerini sıfırla
+            for (const subject in questionStats.tyt) {
+                questionStats.tyt[subject] = { total: 0, correct: 0, incorrect: 0, empty: 0 };
+            }
+            for (const subject in questionStats.ayt) {
+                questionStats.ayt[subject] = { total: 0, correct: 0, incorrect: 0, empty: 0 };
+            }
+            
+            // Toplamları sıfırla
+            totalCorrect = 0;
+            totalIncorrect = 0;
+            totalEmpty = 0;
+            
+            // Hedefleri sıfırla
+            document.getElementById('targets-list').innerHTML = '';
+            
+            // Kaynakları sıfırla
+            document.getElementById('resources-list').innerHTML = '';
+            
+            // Konuları sıfırla
+            document.getElementById('subjects-list').innerHTML = '';
+            dailySubjects = [];
+            
+            // Günlük ilerlemeyi sıfırla
+            document.getElementById('solved-today').textContent = '0';
+            document.getElementById('studied-hours').textContent = '0';
+            document.getElementById('total-questions').textContent = '0';
+            document.getElementById('daily-average').textContent = '0';
+            
+            // Doğru/yanlış/boş alanlarını sıfırla
+            document.getElementById('correct-questions').value = '0';
+            document.getElementById('incorrect-questions').value = '0';
+            document.getElementById('empty-questions').value = '0';
+            
+            // Grafiği sıfırla
+            updatePerformanceChart();
+            
+            // Detaylı istatistikleri sıfırla
+            updateDetailedStats();
+            
+            // localStorage'ı temizle
+            localStorage.removeItem('yksData');
+            
+            // İlerleme çubuklarını güncelle
+            updateProgressBars();
+            
+            // Modal'ı kapat
+            closeModal('reset-modal');
+            
+            // Bildirim göster
+            showNotification('Tüm veriler başarıyla sıfırlandı!');
+            
+            // Örnek hedefleri tekrar ekle
+            addSampleTargets();
+        }
+        
+        // Verileri localStorage'a kaydet
+        function saveToLocalStorage() {
+            const data = {
+                questionStats: questionStats,
+                targets: document.getElementById('targets-list').innerHTML,
+                resources: document.getElementById('resources-list').innerHTML,
+                subjects: document.getElementById('subjects-list').innerHTML,
+                dailySubjects: dailySubjects,
+                solvedToday: document.getElementById('solved-today').textContent,
+                studiedHours: document.getElementById('studied-hours').textContent,
+                totalQuestions: document.getElementById('total-questions').textContent,
+                dailyAverage: document.getElementById('daily-average').textContent,
+                dailyQuestionTarget: dailyQuestionTarget,
+                dailyStudyTarget: dailyStudyTarget,
+                totalCorrect: totalCorrect,
+                totalIncorrect: totalIncorrect,
+                totalEmpty: totalEmpty,
+                lastResetDate: lastResetDate
+            };
+            
+            localStorage.setItem('yksData', JSON.stringify(data));
+        }
+        
+        // Verileri localStorage'dan yükle
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('yksData');
+            
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                // Soru istatistiklerini yükle
+                questionStats = data.questionStats;
+                
+                // Toplamları yükle
+                totalCorrect = data.totalCorrect || 0;
+                totalIncorrect = data.totalIncorrect || 0;
+                totalEmpty = data.totalEmpty || 0;
+                
+                // Son sıfırlama tarihini yükle
+                lastResetDate = data.lastResetDate || new Date().toDateString();
+                
+                // Hedefleri yükle
+                document.getElementById('targets-list').innerHTML = data.targets;
+                
+                // Kaynakları yükle
+                document.getElementById('resources-list').innerHTML = data.resources;
+                
+                // Konuları yükle
+                document.getElementById('subjects-list').innerHTML = data.subjects || '';
+                dailySubjects = data.dailySubjects || [];
+                
+                // Günlük ilerlemeyi yükle
+                document.getElementById('solved-today').textContent = data.solvedToday;
+                document.getElementById('studied-hours').textContent = data.studiedHours;
+                document.getElementById('total-questions').textContent = data.totalQuestions;
+                document.getElementById('daily-average').textContent = data.dailyAverage;
+                
+                // Günlük hedefleri yükle
+                dailyQuestionTarget = data.dailyQuestionTarget || 100;
+                dailyStudyTarget = data.dailyStudyTarget || 5;
+                document.getElementById('daily-question-target').value = dailyQuestionTarget;
+                document.getElementById('daily-study-target').value = dailyStudyTarget;
+                document.getElementById('daily-question-goal').textContent = dailyQuestionTarget;
+                document.getElementById('daily-target').textContent = dailyQuestionTarget;
+                document.getElementById('daily-target-value').textContent = dailyQuestionTarget;
+                document.getElementById('daily-study-goal').textContent = dailyStudyTarget;
+                document.getElementById('target-hours').textContent = dailyStudyTarget;
+                
+                // Günlük verileri kontrol et
+                checkAndResetDailyData();
+                
+                // Performans grafiğini güncelle
+                updatePerformanceChart();
+                
+                // Detaylı istatistikleri güncelle
+                updateDetailedStats();
+                
+                // İlerleme çubuklarını güncelle
+                updateProgressBars();
+            } else {
+                // Örnek hedefleri ekle
+                addSampleTargets();
+            }
+        }
+        
+        // Örnek hedefler ekle
+        function addSampleTargets() {
+            const sampleTargets = [
+                "TYT Matematik konularını bitir",
+                "AYT Edebiyat tekrarı yap",
+                "Her gün 100 soru çöz",
+                "Deneme analizi yap",
+                "Formül defteri oluştur"
+            ];
+            
+            sampleTargets.forEach(target => {
+                document.getElementById('new-target').value = target;
+                addTarget();
+            });
+            
+            // Örnek kaynaklar ekle
+            const sampleResources = [
+                { type: "Kitap", name: "Okyanus Yayınları", subject: "Matematik", examType: "tyt" },
+                { type: "Kitap", name: "Limit Yayınları", subject: "Türkçe", examType: "tyt" },
+                { type: "Video", name: "Tonguç Akademi", subject: "Fizik", examType: "ayt" }
+            ];
+            
+            sampleResources.forEach(resource => {
+                document.getElementById('resource-type').value = resource.type;
+                document.getElementById('resource-name').value = resource.name;
+                document.getElementById('resource-subject').value = resource.subject;
+                selectResourceExamType(resource.examType);
+                addResource();
+            });
+            
+            // İlerleme çubuklarını güncelle
+            updateProgressBars();
+        }
+        
+        // Geri sayım fonksiyonu - Sınav tarihine kalan süreyi hesaplar ve gösterir (iOS uyumlu)
+        function updateCountdown() {
+            // iOS uyumlu tarih formatı: YYYY/MM/DD
+            const examDate = new Date('2026/06/20 10:15:00');
+            const now = new Date();
+            const difference = examDate - now;
+            
+            if (difference <= 0) {
+                // Sınav tarihi geldiğinde tüm verileri sıfırla
+                resetAllData();
+                document.getElementById('countdown').innerHTML = "<p>Sınav zamanı geldi! Başarılar! Veriler sıfırlandı.</p>";
+                return;
+            }
+            
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            
+            document.getElementById('days').textContent = days;
+            document.getElementById('hours').textContent = hours;
+            document.getElementById('minutes').textContent = minutes;
+            document.getElementById('seconds').textContent = seconds;
+            
+            document.getElementById('remaining-days').textContent = days;
+            
+            // Motivasyon mesajlarını güncelle
+            updateMotivation(days);
+        }
+        
+        // Motivasyon mesajlarını güncelle
+        function updateMotivation(days) {
+            const motivationTexts = [
+                "Her gün düzenli çalışmak, başarının anahtarıdır!",
+                "Zorluklar, başarının değerini artıran süslerdir.",
+                "Pes etmek yok! Hedefine her gün bir adım daha yaklaşıyorsun.",
+                "Bugünün işini yarına bırakma, verimli çalış!",
+                "Sınav senen bir maraton, tempoyu iyi ayarla!",
+                "Kendine inan! Başarabileceğini biliyorum.",
+                "Küçük molalar vererek çalışmak verimliliği artırır.",
+                "Denemelerdeki netlerin her geçen gün artsın!",
+                "Düzenlı tekrar yapmak, öğrendiklerini pekiştirir.",
+                "Hedeflerini asla gözden kaybetme!"
+            ];
+            
+            const randomIndex = Math.floor(Math.random() * motivationTexts.length);
+            document.getElementById('motivation-text').textContent = motivationTexts[randomIndex];
+        }
+        
+        // Sınav tipi seçimi (TYT/AYT)
+        function selectExamType(type) {
+            currentExamType = type;
+            document.getElementById('tyt-btn').classList.remove('tyt-active');
+            document.getElementById('ayt-btn').classList.remove('ayt-active');
+            
+            if (type === 'tyt') {
+                document.getElementById('tyt-btn').classList.add('active', 'tyt-active');
+                document.getElementById('ayt-btn').classList.remove('active');
+            } else {
+                document.getElementById('ayt-btn').classList.add('active', 'ayt-active');
+                document.getElementById('tyt-btn').classList.remove('active');
+            }
+        }
+        
+        // Kaynak için sınav tipi seçimi
+        function selectResourceExamType(type) {
+            currentResourceExamType = type;
+            document.getElementById('resource-tyt-btn').classList.remove('tyt-active');
+            document.getElementById('resource-ayt-btn').classList.remove('ayt-active');
+            
+            if (type === 'tyt') {
+                document.getElementById('resource-tyt-btn').classList.add('active', 'tyt-active');
+                document.getElementById('resource-ayt-btn').classList.remove('active');
+            } else {
+                document.getElementById('resource-ayt-btn').classList.add('active', 'ayt-active');
+                document.getElementById('resource-tyt-btn').classList.remove('active');
+            }
+        }
+        
+        // Günlük hedefleri güncelleme
+        function updateDailyGoals() {
+            dailyQuestionTarget = parseInt(document.getElementById('daily-question-target').value) || 100;
+            dailyStudyTarget = parseFloat(document.getElementById('daily-study-target').value) || 5;
+            
+            document.getElementById('daily-question-goal').textContent = dailyQuestionTarget;
+            document.getElementById('daily-target').textContent = dailyQuestionTarget;
+            document.getElementById('daily-target-value').textContent = dailyQuestionTarget;
+            
+            document.getElementById('daily-study-goal').textContent = dailyStudyTarget;
+            document.getElementById('target-hours').textContent = dailyStudyTarget;
+            
+            // İlerleme çubuklarını güncelle
+            updateProgressBars();
+            
+            // localStorage'a kaydet
+            saveToLocalStorage();
+            
+            // Bildirim göster
+            showNotification('Hedefler başarıyla güncellendi!');
+        }
+        
+        // Hedef ekleme fonksiyonu - Kullanıcının girdiği hedefleri listeye ekler ve kaydeder
+        function addTarget() {
+            // Yeni hedef input alanını al
+            const targetInput = document.getElementById('new-target');
+            // Girilen metni al ve boşlukları temizle
+            const targetText = targetInput.value.trim();
+            
+            // Eğer metin boşsa işlemi durdur
+            if (targetText === "") return;
+            
+            // Hedefler listesini al
+            const targetsList = document.getElementById('targets-list');
+            // Yeni liste öğesi oluştur
+            const listItem = document.createElement('li');
+            
+            // Liste öğesinin HTML içeriğini ayarla
+            listItem.innerHTML = `
+                <div class="target-item">
+                    <div class="target-text">${targetText}</div>
+                    <div class="target-actions">
+                        <label class="checkbox-container">
+                            <input type="checkbox" onchange="updateProgress(this)">
+                            <span class="checkmark"></span>
+                        </label>
+                        <button class="btn btn-sm" onclick="removeTarget(this)"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+            
+            // Liste öğesini hedefler listesine ekle
+            targetsList.appendChild(listItem);
+            // Input alanını temizle
+            targetInput.value = "";
+            
+            // İlerleme çubuklarını güncelle
+            updateProgressBars();
+            
+            // Verileri localStorage'a kaydet
+            saveToLocalStorage();
+            
+            // Başarı bildirimi göster
+            showNotification('Hedef başarıyla eklendi!');
+        }
+        
+        // Hedef silme fonksiyonu
+        function removeTarget(button) {
+            const listItem = button.closest('li');
+            listItem.remove();
+            
+            // İlerleme çubuklarını güncelle
+            updateProgressBars();
+            
+            // localStorage'a kaydet
+            saveToLocalStorage();
+            
+            // Bildirim göster
+            showNotification('Hedef başarıyla silindi!');
+        }
+        
+        // Konu ekleme fonksiyonu
+        function addSubject() {
+            const subjectInput = document.getElementById('new-subject');
+            const subjectText = subjectInput.value.trim();
+            
+            if (subjectText === "") return;
+            
+            const subjectsList = document.getElementById('subjects-list');
+            const listItem = document.createElement('li');
+            
+            listItem.innerHTML = `
+                <div class="target-item">
+                    <div class="target-text">${subjectText}</div>
+                    <div class="target-actions">
+                        <button class="btn btn-sm btn-danger" onclick="removeSubject(this)"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            `;
+            
+            subjectsList.appendChild(listItem);
+            subjectInput.value = "";
+            
+            // Array'e ekle
+            dailySubjects.push(subjectText);
+            
+            // localStorage'a kaydet
+            saveToLocalStorage();
+            
+            showNotification('Konu başarıyla eklendi!');
+        }
+        
+        // Konu silme fonksiyonu
+        function removeSubject(button) {
+            const listItem = button.closest('li');
+            const subjectText = listItem.querySelector('.target-text').textContent;
+            
+            // Array'den çıkar
+            const index = dailySubjects.indexOf(subjectText);
+            if (index > -1) {
+                dailySubjects.splice(index, 1);
+            }
+            
+            listItem.remove();
+            
+            // localStorage'a kaydet
+            saveToLocalStorage();
+            
+            showNotification('Konu başarıyla silindi!');
+        }
+        
+        // İlerleme durumunu güncelleme
+        function updateProgress(checkbox) {
+            const listItem = checkbox.closest('li');
+            const textSpan = listItem.querySelector('.target-text');
+            
+            if (checkbox.checked) {
+                textSpan.classList.add('completed');
+            } else {
+                textSpan.classList.remove('completed');
+            }
+            
+            updateProgressBars();
+            
+            // localStorage'a kaydet
+            saveToLocalStorage();
+        }
+        
+        // İlerleme çubuklarını güncelleme
+        function updateProgressBars() {
+            const targets = document.querySelectorAll('#targets-list li');
+            const completedTargets = document.querySelectorAll('#targets-list input:checked');
+            
+            if (targets.length > 0) {
+                const progressPercent = (completedTargets.length / targets.length) * 100;
+                document.getElementById('overall-progress').style.width = `${progressPercent}%`;
+                document.getElementById('progress-text').textContent = `%${Math.round(progressPercent)}`;
+                document.getElementById('completed-targets').textContent = `${Math.round(progressPercent)}%`;
+            } else {
+                document.getElementById('overall-progress').style.width = '0%';
+                document.getElementById('progress-text').textContent = '%0';
+                document.getElementById('completed-targets').textContent = '0%';
+            }
+            
+            // Soru ilerleme çubuğunu güncelle
+            const solvedToday = parseInt(document.getElementById('solved-today').textContent);
+            const questionProgress = Math.min((solvedToday / dailyQuestionTarget) * 100, 100);
+            document.getElementById('question-progress').style.width = `${questionProgress}%`;
+            
+            // Çalışma saati ilerleme çubuğunu güncelle
+            const studiedHours = parseFloat(document.getElementById('studied-hours').textContent);
+            const studyProgress = Math.min((studiedHours / dailyStudyTarget) * 100, 100);
+            document.getElementById('study-progress').style.width = `${studyProgress}%`;
+        }
+        
+        // Çalışma saati ekleme
+        function addStudyHours() {
+            const hoursInput = document.getElementById('add-hours');
+            const hours = parseFloat(hoursInput.value);
+            
+            if (isNaN(hours) || hours <= 0) return;
+            
+            const studiedHoursElement = document.getElementById('studied-hours');
+            const currentHours = parseFloat(studiedHoursElement.textContent);
+            const newTotal = currentHours + hours;
+            
+            studiedHoursElement.textContent = newTotal.toFixed(1);
+            
+            // Günlük çalışma hedefi tamamlandı mı kontrol et
+            if (newTotal >= dailyStudyTarget && currentHours < dailyStudyTarget) {
+                showNotification(`🎉 Tebrikler! Günlük çalışma hedefinizi tamamladınız! (${dailyStudyTarget} saat)`, true);
+            }
+            
+            updateProgressBars();
+            
+            hoursInput.value = "";
+            
+            // localStorage'a kaydet
+            saveToLocalStorage();
+            
+            // Bildirim göster
+            showNotification('Çalışma saati başarıyla eklendi!');
+        }
+        
+        // Performans grafiğini güncelle
+        function updatePerformanceChart() {
+            const total = totalCorrect + totalIncorrect + totalEmpty;
+            
+            // Grafikte gösterilecek yüzdeleri hesapla
+            const correctPercent = total > 0 ? (totalCorrect / total) * 100 : 0;
+            const incorrectPercent = total > 0 ? (totalIncorrect / total) * 100 : 0;
+            const emptyPercent = total > 0 ? (totalEmpty / total) * 100 : 0;
+            
+            // Grafik arka planını güncelle
+            const chart = document.getElementById('performance-chart');
+            chart.style.background = `conic-gradient(
+                var(--success) 0% ${correctPercent}%,
+                var(--danger) ${correctPercent}% ${correctPercent + incorrectPercent}%,
+                var(--warning) ${correctPercent + incorrectPercent}% ${correctPercent + incorrectPercent + emptyPercent}%,
+                #e9ecef ${correctPercent + incorrectPercent + emptyPercent}% 100%
+            )`;
+            
+            // Toplam değerini güncelle
+            document.getElementById('chart-total').textContent = total;
+            
+            // Lejant değerlerini güncelle
+            document.getElementById('legend-correct').textContent = totalCorrect;
+            document.getElementById('legend-incorrect').textContent = totalIncorrect;
+            document.getElementById('legend-empty').textContent = totalEmpty;
+            
+            // Performans istatistiklerini güncelle
+            const net = totalCorrect - (totalIncorrect / 3); // Net hesabı (3 yanlış 1 doğruyu götürür)
+            const accuracy = totalCorrect > 0 ? (totalCorrect / (totalCorrect + totalIncorrect)) * 100 : 0;
+            const correctRatio = total > 0 ? (totalCorrect / total) * 100 : 0;
+            const incorrectRatio = total > 0 ? (totalIncorrect / total) * 100 : 0;
+            
+            document.getElementById('net-value').textContent = net.toFixed(1);
+            document.getElementById('accuracy-value').textContent = `${accuracy.toFixed(1)}%`;
+            document.getElementById('correct-ratio').textContent = `${correctRatio.toFixed(1)}%`;
+            document.getElementById('incorrect-ratio').textContent = `${incorrectRatio.toFixed(1)}%`;
+        }
+        
+        // Soru ekleme fonksiyonu - Çözülen soruları sisteme kaydeder ve istatistikleri günceller
+        function addQuestions() {
+            // Form alanlarını al
+            const correctInput = document.getElementById('correct-questions');
+            const incorrectInput = document.getElementById('incorrect-questions');
+            const emptyInput = document.getElementById('empty-questions');
+            const subjectSelect = document.getElementById('question-subject');
+            
+            // Girilen değerleri sayı olarak al (varsayılan 0)
+            const correct = parseInt(correctInput.value) || 0;
+            const incorrect = parseInt(incorrectInput.value) || 0;
+            const empty = parseInt(emptyInput.value) || 0;
+            // Seçilen dersi al
+            const subject = subjectSelect.value;
+            
+            // Toplam soru sayısını hesapla
+            const totalQuestions = correct + incorrect + empty;
+            
+            // Eğer hiç soru girilmemişse uyarı ver
+            if (totalQuestions <= 0) {
+                showNotification("Lütfen doğru, yanlış veya boş soru sayısı giriniz.", false);
+                return;
+            }
+            
+            // Bugünkü soru sayısını güncelle
+            const solvedTodayElement = document.getElementById('solved-today');
+            const currentSolved = parseInt(solvedTodayElement.textContent);
+            const newSolvedTotal = currentSolved + totalQuestions;
+            solvedTodayElement.textContent = newSolvedTotal;
+            
+            // Günlük soru hedefi tamamlandı mı kontrol et
+            if (newSolvedTotal >= dailyQuestionTarget && currentSolved < dailyQuestionTarget) {
+                showNotification(`🎉 Tebrikler! Günlük soru hedefinizi tamamladınız! (${dailyQuestionTarget} soru)`, true);
+            }
+            
+            // Toplam soru sayısını güncelle
+            const totalQuestionsElement = document.getElementById('total-questions');
+            const currentTotal = parseInt(totalQuestionsElement.textContent);
+            const newTotal = currentTotal + totalQuestions;
+            totalQuestionsElement.textContent = newTotal;
+            
+            // Genel toplamları güncelle
+            totalCorrect += correct;
+            totalIncorrect += incorrect;
+            totalEmpty += empty;
+            
+            // Ders bazlı istatistikleri güncelle
+            questionStats[currentExamType][subject].total += totalQuestions;
+            questionStats[currentExamType][subject].correct += correct;
+            questionStats[currentExamType][subject].incorrect += incorrect;
+            questionStats[currentExamType][subject].empty += empty;
+            
+            // Günlük ortalamayı hesapla ve güncelle
+            const remainingDays = parseInt(document.getElementById('remaining-days').textContent);
+            const dailyAverage = remainingDays > 0 ? Math.round(newTotal / (365 - remainingDays)) : newTotal / 365;
+            document.getElementById('daily-average').textContent = dailyAverage;
+            
+            // Performans grafiğini güncelle
+            updatePerformanceChart();
+            
+            // Detaylı istatistikleri güncelle
+            updateDetailedStats();
+            
+            // İlerleme çubuklarını güncelle
+            updateProgressBars();
+            
+            // Doğru/yanlış/boş alanlarını sıfırla
+            correctInput.value = "0";
+            incorrectInput.value = "0";
+            emptyInput.value = "0";
+            
+            // localStorage'a kaydet
+            saveToLocalStorage();
+            
+            // Bildirim göster
+            showNotification(`${totalQuestions} soru başarıyla eklendi!`);
+        }
+        
+        // Kaynak ekleme fonksiyonu
+        function addResource() {
+            const type = document.getElementById('resource-type').value;
+            const name = document.getElementById('resource-name').value.trim();
+            const subject = document.getElementById('resource-subject').value.trim();
+            
+            if (name === "" || subject === "") {
+                showNotification("Lütfen kaynak adı ve ders/konu bilgilerini giriniz.", false);
+                return;
+            }
+            
+            const resourcesList = document.getElementById('resources-list');
+            const listItem = document.createElement('li');
+            const badgeClass = currentResourceExamType === 'tyt' ? 'badge-tyt' : 'badge-ayt';
+            const examType = currentResourceExamType.toUpperCase();
+            
+            listItem.innerHTML = `
+                <div class="resource-item">
+                    <div>
+                        <span class="badge ${badgeClass}">${examType}</span> 
+                        <strong>${name}</strong> - ${subject} (${type})
+                    </div>
+                    <button class="delete-btn" onclick="removeResource(this)"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            
+            resourcesList.appendChild(listItem);
+            
+            // Formu temizle
+            document.getElementById('resource-name').value = "";
+            document.getElementById('resource-subject').value = "";
+            
+            // localStorage'a kaydet
+            saveToLocalStorage();
+            
+            // Bildirim göster
+            showNotification('Kaynak başarıyla eklendi!');
+        }
+        
+        // Kaynak silme fonksiyonu
+        function removeResource(button) {
+            const listItem = button.closest('li');
+            listItem.remove();
+            
+            // localStorage'a kaydet
+            saveToLocalStorage();
+            
+            // Bildirim göster
+            showNotification('Kaynak başarıyla silindi!');
+        }
+        
+        // Tab değiştirme fonksiyonu
+        function switchTab(tabId) {
+            // Tüm tab içeriklerini gizle
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let content of tabContents) {
+                content.classList.remove('active');
+            }
+            
+            // Tüm tabları pasif yap
+            const tabs = document.getElementsByClassName('tab');
+            for (let tab of tabs) {
+                tab.classList.remove('active');
+            }
+            
+            // Seçilen tabı ve içeriği aktif yap
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        // Dağılım sayfasını göster
+        function showDistributionPage() {
+            document.querySelector('.main-page').style.display = 'none';
+            document.getElementById('distribution-page').style.display = 'block';
+            updateDistributionCharts();
+        }
+        
+        // Ana sayfaya geri dön
+        function goBackToMainPage() {
+            document.getElementById('distribution-page').style.display = 'none';
+            document.querySelector('.main-page').style.display = 'block';
+        }
+        
+        // Dağılım grafiklerini güncelle
+        function updateDistributionCharts() {
+            const tytChart = document.getElementById('tyt-chart');
+            const aytChart = document.getElementById('ayt-chart');
+            const topSubjectsList = document.getElementById('top-subjects');
+            
+            // Önce içeriği temizle
+            tytChart.innerHTML = '';
+            aytChart.innerHTML = '';
+            topSubjectsList.innerHTML = '';
+            
+            // TYT ve AYT toplam soruları hesapla
+            let totalTyt = 0;
+            let totalAyt = 0;
+            
+            for (const subject in questionStats.tyt) {
+                totalTyt += questionStats.tyt[subject].total;
+            }
+            
+            for (const subject in questionStats.ayt) {
+                totalAyt += questionStats.ayt[subject].total;
+            }
+            
+            // TYT/AYT oranını güncelle
+            const totalQuestions = totalTyt + totalAyt;
+            const tytRatio = totalQuestions > 0 ? (totalTyt / totalQuestions) * 100 : 50;
+            const aytRatio = totalQuestions > 0 ? (totalAyt / totalQuestions) * 100 : 50;
+            
+            document.getElementById('tyt-ayt-ratio').style.width = `${tytRatio}%`;
+            document.getElementById('ratio-text').textContent = `%${Math.round(tytRatio)} TYT - %${Math.round(aytRatio)} AYT`;
+            
+            document.getElementById('total-tyt-questions').textContent = totalTyt;
+            document.getElementById('total-ayt-questions').textContent = totalAyt;
+            
+            // TYT grafiğini oluştur
+            for (const subject in questionStats.tyt) {
+                const value = questionStats.tyt[subject].total;
+                if (value > 0) {
+                    const percentage = totalTyt > 0 ? (value / totalTyt) * 100 : 0;
+                    
+                    const chartBar = document.createElement('div');
+                    chartBar.className = 'chart-bar';
+                    chartBar.innerHTML = `
+                        <div class="chart-bar-label">${subject}</div>
+                        <div class="chart-bar-track">
+                            <div class="chart-bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="chart-bar-value">${value}</div>
+                    `;
+                    
+                    tytChart.appendChild(chartBar);
+                }
+            }
+            
+            // AYT grafiğini oluştur
+            for (const subject in questionStats.ayt) {
+                const value = questionStats.ayt[subject].total;
+                if (value > 0) {
+                    const percentage = totalAyt > 0 ? (value / totalAyt) * 100 : 0;
+                    
+                    const chartBar = document.createElement('div');
+                    chartBar.className = 'chart-bar';
+                    chartBar.innerHTML = `
+                                            <div class="chart-bar-label">${subject}</div>
+                        <div class="chart-bar-track">
+                            <div class="chart-bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="chart-bar-value">${value}</div>
+                    `;
+                    
+                    aytChart.appendChild(chartBar);
+                }
+            }
+            
+            // En çok çözülen dersleri bul
+            const allSubjects = [];
+            
+            for (const subject in questionStats.tyt) {
+                allSubjects.push({
+                    name: `TYT ${subject}`,
+                    value: questionStats.tyt[subject].total
+                });
+            }
+            
+            for (const subject in questionStats.ayt) {
+                allSubjects.push({
+                    name: `AYT ${subject}`,
+                    value: questionStats.ayt[subject].total
+                });
+            }
+            
+            // Değere göre sırala (büyükten küçüğe)
+            allSubjects.sort((a, b) => b.value - a.value);
+            
+            // İlk 5 dersi listele
+            const topSubjects = allSubjects.slice(0, 5);
+            
+            for (const subject of topSubjects) {
+                const listItem = document.createElement('li');
+                listItem.innerHTML = `${subject.name}: <span class="stat-value">${subject.value}</span> soru`;
+                topSubjectsList.appendChild(listItem);
+            }
+        }
+        
+        // Sayfa yüklendiğinde geri sayımı başlat
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            
+            // localStorage'dan verileri yükle
+            loadFromLocalStorage();
+            
+            // Günlük verileri kontrol et
+            checkAndResetDailyData();
+            
+            // İlerleme çubuklarını güncelle
+            updateProgressBars();
+            
+            // iOS için viewport ayarı
+            if (navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)) {
+                document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+            }
+        });
+    </script>
+    <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+</body>
+</html>
