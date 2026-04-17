@@ -82,6 +82,41 @@
             align-items: center;
         }
         
+        .loading-logo {
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .loading-logo i {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            color: white;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .loading-logo h1 {
+            font-size: 2.2rem;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 2px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        @keyframes pulse {
+            0%, 100% { 
+                transform: scale(1); 
+                opacity: 1;
+            }
+            50% { 
+                transform: scale(1.05); 
+                opacity: 0.9;
+            }
+        }
+        
         header::before {
             content: '';
             position: absolute;
@@ -932,8 +967,9 @@
         }
         
         .performance-label {
-            font-size: 0.7rem;
-            color: #6c757d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         /* Detaylı İstatistikler Bölümü */
@@ -942,14 +978,8 @@
             border-radius: 12px;
             padding: 15px;
             margin-top: 20px;
-        }
-        
-        .detailed-stats h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
         }
         
         .stats-table {
