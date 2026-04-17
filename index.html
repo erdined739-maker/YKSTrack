@@ -3,8 +3,6 @@
 <html lang="tr">
 <!-- Sayfa dili Türkçe olarak ayarlandı -->
 <head>
-    <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#000000">
     <!-- Sayfa başlığı ve meta bilgiler -->
     <meta charset="UTF-8">
     <!-- Karakter kodlaması UTF-8 -->
@@ -21,19 +19,13 @@
     <meta name="theme-color" content="#1e40af">
     <!-- Tema rengi -->
     <link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#1e40af">
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js');
-}
-</script>
+    <link rel="manifest" href="manifest.json">
+    <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
+    }
+    </script>
     <style>
-        html, body {
-    max-width: 100%;
-    overflow-x: hidden;
-    position: relative;
-}
 
         :root {
             /* CSS değişkenleri tanımları - Renk paleti ve genel ayarlar */
@@ -112,6 +104,40 @@ if ('serviceWorker' in navigator) {
             font-size: 0.9rem;
             opacity: 0.9;
             position: relative;
+        }
+        
+        .exam-info {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .exam-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        
+        .tyt-badge {
+            background: linear-gradient(135deg, var(--tyt), #2563eb);
+        }
+        
+        .ayt-badge {
+            background: linear-gradient(135deg, var(--ayt), #7c3aed);
+        }
+        
+        .total-badge {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
         }
         
         /* Geri sayım konteyneri - Sınav tarihine kalan süreyi gösterir */
@@ -1219,6 +1245,11 @@ html, body {
         <header>
             <h1><i class="fas fa-graduation-cap"></i> YKS Asistanı</h1>
             <p class="header-subtitle">20 Haziran 2026, 10:15'e kadar olan yolculuğunuz</p>
+            <div class="exam-info">
+                <span class="exam-badge tyt-badge">TYT: 160 Dakika</span>
+                <span class="exam-badge ayt-badge">AYT: 180 Dakika</span>
+                <span class="exam-badge total-badge">Toplam: 340 Dakika</span>
+            </div>
         </header>
         
         <div class="countdown-container">
@@ -1505,8 +1536,7 @@ html, body {
 
     <!-- Derslere Göre Dağılım Sayfası -->
     <div class="container distribution-page" id="distribution-page">
-        <button class="btn back-button" onclick="goBackToMainPage()"><i class="fas fa-arrow-left"></i> Geri Dön</button>
-        
+                
         <header>
             <h1><i class="fas fa-chart-bar"></i> Derslere Göre Dağılım</h1>
             <p class="header-subtitle">Soru çözüm istatistiklerinizin detaylı analizi</p>
@@ -2292,24 +2322,22 @@ html, body {
             questionStats[currentExamType][subject].incorrect += incorrect;
             questionStats[currentExamType][subject].empty += empty;
             
-            // Günlük ortalamayı hesapla ve güncelle
+            // Günlük ortalamayý hesapla ve güncelle
             const remainingDays = parseInt(document.getElementById('remaining-days').textContent);
             const dailyAverage = remainingDays > 0 ? Math.round(newTotal / (365 - remainingDays)) : newTotal / 365;
             document.getElementById('daily-average').textContent = dailyAverage;
             
-            // Performans grafiğini güncelle
+            // Performans grafiðini güncelle
             updatePerformanceChart();
             
-            // Detaylı istatistikleri güncelle
+            // Detaylý istatistikleri güncelle
             updateDetailedStats();
             
-            // İlerleme çubuklarını güncelle
+            // ilerleme çubuklarýný güncelle
             updateProgressBars();
             
-            // Doğru/yanlış/boş alanlarını sıfırla
-            correctInput.value = "0";
-            incorrectInput.value = "0";
-            emptyInput.value = "0";
+            // Daðýlým grafiklerini güncelle
+            updateDistributionCharts();
             
             // localStorage'a kaydet
             saveToLocalStorage();
@@ -2509,7 +2537,7 @@ html, body {
         document.addEventListener('DOMContentLoaded', function() {
             updateCountdown();
             setInterval(updateCountdown, 1000);
-            
+        
             // localStorage'dan verileri yükle
             loadFromLocalStorage();
             
