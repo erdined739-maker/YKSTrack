@@ -1469,9 +1469,10 @@ html, body {
                                 <option value="Felsefe">Felsefe</option>
                                 <option value="Edebiyat">Edebiyat</option>
                                 <option value="Din Kültürü">Din Kültürü</option>
-                                <option value="Ýngilizce">Ýngilizce</option>
+                                <option value="İngilizce">İngilizce</option>
                             </select>
-                            <input type="text" id="note-topic" placeholder="Konu (Örn: Türev, Osmanlý Devleti)">
+                            <input type="text" id="note-topic" placeholder="Konu (Örn: Türev, Osmanlı Devleti)">
+                            <input type="date" id="note-date" style="width: 100%; padding: 10px; border: 2px solid #e9ecef; border-radius: 8px; margin-top: 10px;">
                             <button class="btn" onclick="addNote()"><i class="fas fa-sticky-note"></i> Not Ekle</button>
                         </div>
                         <div style="margin-top: 15px;">
@@ -2432,7 +2433,7 @@ html, body {
             
             // Günlük ortalamayý hesapla ve güncelle
             const remainingDays = parseInt(document.getElementById('remaining-days').textContent);
-            const dailyAverage = remainingDays > 0 ? Math.round(newTotal / (365 - remainingDays)) : newTotal / 365;
+            const dailyAverage = remainingDays > 0 ? Math.round(newTotal / (365 - remainingDays)) : Math.round(newTotal / 365);
             document.getElementById('daily-average').textContent = dailyAverage;
             
             // Performans grafiðini güncelle
@@ -2455,6 +2456,7 @@ html, body {
             const subject = document.getElementById('note-subject').value;
             const topic = document.getElementById('note-topic').value.trim();
             const content = document.getElementById('note-content').value.trim();
+            const date = document.getElementById('note-date').value;
             
             if (subject === "" || topic === "" || content === "") {
                 showNotification("Lütfen ders, konu ve not içeriðini doldurunuz.", false);
@@ -2464,10 +2466,16 @@ html, body {
             const notesList = document.getElementById('notes-list');
             const listItem = document.createElement('li');
             
-            // Tarih ve saat oluþtur
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('tr-TR');
-            const timeStr = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+            // Tarih belirle
+            let dateStr;
+            if (date) {
+                const selectedDate = new Date(date);
+                dateStr = selectedDate.toLocaleDateString('tr-TR');
+            } else {
+                const now = new Date();
+                dateStr = now.toLocaleDateString('tr-TR');
+            }
+            const timeStr = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
             
             listItem.innerHTML = `
                 <div class="note-item">
@@ -2485,6 +2493,7 @@ html, body {
             // Formu temizle
             document.getElementById('note-subject').value = "";
             document.getElementById('note-topic').value = "";
+            document.getElementById('note-date').value = "";
             document.getElementById('note-content').value = "";
             
             // localStorage'a kaydet
@@ -2701,6 +2710,12 @@ html, body {
                 document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
             }
         };
+
+        // Sayfa yüklendiğinde geri sayımı başlat
+        window.addEventListener('load', function() {
+            updateCountdown(); // İlk kez çalıştır
+            setInterval(updateCountdown, 1000); // Her saniye güncelle
+        });
     </script>
     <script>
 if ("serviceWorker" in navigator) {
