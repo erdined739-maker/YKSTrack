@@ -2699,22 +2699,24 @@ html, body {
             }
         }
         
+        // Sayfa yüklendiğinde geri sayımı başlat
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
             
-            // Ana sayfaya geri dön
-            function goBackToMainPage() {
-                document.getElementById('distribution-page').style.display = 'none';
-                document.querySelector('.main-page').style.display = 'block';
+            // localStorage'dan verileri yükle
+            loadFromLocalStorage();
+            
+            // Günlük verileri kontrol et
+            checkAndResetDailyData();
+            
+            // İlerleme çubuklarını güncelle
+            updateProgressBars();
             
             // iOS için viewport ayarı
             if (navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)) {
                 document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
             }
-        };
-
-        // Sayfa yüklendiğinde geri sayımı başlat
-        window.addEventListener('load', function() {
-            updateCountdown(); // İlk kez çalıştır
-            setInterval(updateCountdown, 1000); // Her saniye güncelle
         });
     </script>
     <script>
