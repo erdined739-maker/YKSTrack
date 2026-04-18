@@ -319,7 +319,7 @@
         
         /* Genel buton stili - Tüm butonlar için temel görünüm */
         .btn {
-            background-color: var(--primary); /* Canlý mavi arka plan */
+            background-color: var(--primary); /* Canli mavi arka plan */
             color: white; /* Beyaz metin */
             border: none;
             padding: 6px 10px;
@@ -1977,7 +1977,11 @@ html, body {
         
         // Modal göster
         function showResetModal() {
-            document.getElementById('reset-modal').style.display = 'flex';
+            const confirmed = confirm('TÜM VERILERINIZ SILINECEK!\n\nBu islem geri alınamaz:\n- Çözülen tüm sorular\n- Günlük hedefler\n- Calisma saatleri\n- Konular ve kaynaklar\n- Tüm istatistikler\n\nEmin misiniz?');
+            
+            if (confirmed) {
+                resetAllData();
+            }
         }
         
         // Modal kapat
@@ -2718,7 +2722,7 @@ html, body {
             }
         }
         
-        // Tab deðiþtirme fonksiyonu
+        // Tab degistirme fonksiyonu
         function switchTab(tabId) {
             // Tüm tab içeriklerini gizle
             const tabContents = document.getElementsByClassName('tab-content');
