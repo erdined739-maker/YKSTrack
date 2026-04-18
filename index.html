@@ -1267,6 +1267,51 @@ html, body {
     flex: 1 1 70px; /* Birimlerin çok büyümesini engeller */
     max-width: 80px;
 }
+
+/* Ders Notlari Stilleri */
+.note-item {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 10px;
+    border-left: 4px solid var(--primary);
+}
+
+.note-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.note-subject {
+    background: var(--primary);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.note-topic {
+    font-weight: 600;
+    color: var(--dark);
+    flex: 1;
+}
+
+.note-date {
+    font-size: 0.7rem;
+    color: #6c757d;
+    white-space: nowrap;
+}
+
+.note-content {
+    color: #495057;
+    line-height: 1.5;
+    white-space: pre-wrap;
+}
     </style>
 </head>
 <body>
@@ -1387,6 +1432,7 @@ html, body {
                     <div class="tabs">
                         <div class="tab active" onclick="switchTab('subjects')">Konularım</div>
                         <div class="tab" onclick="switchTab('resources')">Kaynaklar</div>
+                        <div class="tab" onclick="switchTab('notes')">Ders Notlarım</div>
                         <div class="tab" onclick="switchTab('add-resource')"><i class="fas fa-plus"></i></div>
                     </div>
                     
@@ -1406,6 +1452,38 @@ html, body {
                     <div id="resources" class="tab-content">
                         <ul class="subject-list" id="resources-list">
                             <!-- Kaynaklar buraya eklenecek -->
+                        </ul>
+                    </div>
+                    
+                    <div id="notes" class="tab-content">
+                        <div>
+                            <select id="note-subject">
+                                <option value="">Ders seçin</option>
+                                <option value="Matematik">Matematik</option>
+                                <option value="Türkçe">Türkçe</option>
+                                <option value="Fizik">Fizik</option>
+                                <option value="Kimya">Kimya</option>
+                                <option value="Biyoloji">Biyoloji</option>
+                                <option value="Tarih">Tarih</option>
+                                <option value="Coğrafya">Coğrafya</option>
+                                <option value="Felsefe">Felsefe</option>
+                                <option value="Edebiyat">Edebiyat</option>
+                                <option value="Din Kültürü">Din Kültürü</option>
+                                <option value="Ýngilizce">Ýngilizce</option>
+                            </select>
+                            <input type="text" id="note-topic" placeholder="Konu (Örn: Türev, Osmanlý Devleti)">
+                            <button class="btn" onclick="addNote()"><i class="fas fa-sticky-note"></i> Not Ekle</button>
+                        </div>
+                        <div style="margin-top: 15px;">
+                            <textarea id="note-content" placeholder="Notunuzun içeriðini yazýn..." style="width: 100%; min-height: 80px; padding: 10px; border: 2px solid #e9ecef; border-radius: 8px; resize: vertical; font-family: inherit;"></textarea>
+                        </div>
+                        <div style="margin-top: 10px; text-align: right;">
+                            <button class="btn btn-danger" onclick="clearAllNotes()" style="background: var(--danger); padding: 8px 16px; font-size: 0.9rem;">
+                                <i class="fas fa-trash"></i> Tümünü Temizle
+                            </button>
+                        </div>
+                        <ul class="subject-list" id="notes-list" style="margin-top: 15px;">
+                            <!-- Notlar buraya eklenecek -->
                         </ul>
                     </div>
                     
@@ -2369,65 +2447,114 @@ html, body {
             // Daðýlým grafiklerini güncelle
             updateDistributionCharts();
             
-            // localStorage'a kaydet
-            saveToLocalStorage();
-            
-            // Bildirim göster
             showNotification(`${totalQuestions} soru başarıyla eklendi!`);
         }
         
-        // Kaynak ekleme fonksiyonu
-        function addResource() {
-            const type = document.getElementById('resource-type').value;
-            const name = document.getElementById('resource-name').value.trim();
-            const subject = document.getElementById('resource-subject').value.trim();
+        // Ders notu ekleme fonksiyonu
+        function addNote() {
+            const subject = document.getElementById('note-subject').value;
+            const topic = document.getElementById('note-topic').value.trim();
+            const content = document.getElementById('note-content').value.trim();
             
-            if (name === "" || subject === "") {
-                showNotification("Lütfen kaynak adı ve ders/konu bilgilerini giriniz.", false);
+            if (subject === "" || topic === "" || content === "") {
+                showNotification("Lütfen ders, konu ve not içeriðini doldurunuz.", false);
                 return;
             }
             
-            const resourcesList = document.getElementById('resources-list');
+            const notesList = document.getElementById('notes-list');
             const listItem = document.createElement('li');
-            const badgeClass = currentResourceExamType === 'tyt' ? 'badge-tyt' : 'badge-ayt';
-            const examType = currentResourceExamType.toUpperCase();
+            
+            // Tarih ve saat oluþtur
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('tr-TR');
+            const timeStr = now.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
             
             listItem.innerHTML = `
-                <div class="resource-item">
-                    <div>
-                        <span class="badge ${badgeClass}">${examType}</span> 
-                        <strong>${name}</strong> - ${subject} (${type})
+                <div class="note-item">
+                    <div class="note-header">
+                        <span class="note-subject">${subject}</span>
+                        <span class="note-topic">${topic}</span>
+                        <span class="note-date">${dateStr} ${timeStr}</span>
                     </div>
-                    <button class="delete-btn" onclick="removeResource(this)"><i class="fas fa-trash"></i></button>
+                    <div class="note-content">${content}</div>
                 </div>
             `;
             
-            resourcesList.appendChild(listItem);
+            notesList.insertBefore(listItem, notesList.firstChild);
             
             // Formu temizle
-            document.getElementById('resource-name').value = "";
-            document.getElementById('resource-subject').value = "";
+            document.getElementById('note-subject').value = "";
+            document.getElementById('note-topic').value = "";
+            document.getElementById('note-content').value = "";
             
             // localStorage'a kaydet
-            saveToLocalStorage();
+            saveNotesToLocalStorage();
             
             // Bildirim göster
-            showNotification('Kaynak başarıyla eklendi!');
+            showNotification('Not başarıyla eklendi!');
         }
         
-        // Kaynak silme fonksiyonu
-        function removeResource(button) {
-            const listItem = button.closest('li');
-            listItem.remove();
-            
-            // localStorage'a kaydet
-            saveToLocalStorage();
-            
-            // Bildirim göster
-            showNotification('Kaynak başarıyla silindi!');
+        // Tüm notlarý temizle fonksiyonu
+        function clearAllNotes() {
+            if (confirm('Tüm ders notlarýnýz silinecek. Bu iþlem geri alýnamaz. Emin misiniz?')) {
+                const notesList = document.getElementById('notes-list');
+                notesList.innerHTML = '';
+                
+                // localStorage'dan temizle
+                localStorage.removeItem('yksNotes');
+                
+                showNotification('Tüm notlar temizlendi!');
+            }
         }
         
-        // Tab değiştirme fonksiyonu
+        // Notlarý localStorage'a kaydet
+        function saveNotesToLocalStorage() {
+            const notesList = document.getElementById('notes-list');
+            const notes = [];
+            
+            for (let i = 0; i < notesList.children.length; i++) {
+                const noteItem = notesList.children[i];
+                const noteHeader = noteItem.querySelector('.note-header');
+                const noteContent = noteItem.querySelector('.note-content');
+                
+                if (noteHeader && noteContent) {
+                    notes.push({
+                        subject: noteHeader.querySelector('.note-subject').textContent,
+                        topic: noteHeader.querySelector('.note-topic').textContent,
+                        date: noteHeader.querySelector('.note-date').textContent,
+                        content: noteContent.textContent
+                    });
+                }
+            }
+            
+            localStorage.setItem('yksNotes', JSON.stringify(notes));
+        }
+        
+        // Notlarý localStorage'dan yükle
+        function loadNotesFromLocalStorage() {
+            const savedNotes = localStorage.getItem('yksNotes');
+            if (savedNotes) {
+                const notes = JSON.parse(savedNotes);
+                const notesList = document.getElementById('notes-list');
+                
+                notes.forEach(note => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `
+                        <div class="note-item">
+                            <div class="note-header">
+                                <span class="note-subject">${note.subject}</span>
+                                <span class="note-topic">${note.topic}</span>
+                                <span class="note-date">${note.date}</span>
+                            </div>
+                            <div class="note-content">${note.content}</div>
+                        </div>
+                    `;
+                    notesList.appendChild(listItem);
+                });
+            }
+        }
+        
+        // Tab deðiþtirme fonksiyonu
         function switchTab(tabId) {
             // Tüm tab içeriklerini gizle
             const tabContents = document.getElementsByClassName('tab-content');
@@ -2563,25 +2690,17 @@ html, body {
             }
         }
         
-        // Sayfa yüklendiğinde geri sayımı başlat
-        document.addEventListener('DOMContentLoaded', function() {
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
             
-            // localStorage'dan verileri yükle
-            loadFromLocalStorage();
-            
-            // Günlük verileri kontrol et
-            checkAndResetDailyData();
-            
-            // İlerleme çubuklarını güncelle
-            updateProgressBars();
+            // Ana sayfaya geri dön
+            function goBackToMainPage() {
+                document.getElementById('distribution-page').style.display = 'none';
+                document.querySelector('.main-page').style.display = 'block';
             
             // iOS için viewport ayarı
             if (navigator.platform && /iPad|iPhone|iPod/.test(navigator.platform)) {
                 document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
             }
-        });
+        };
     </script>
     <script>
 if ("serviceWorker" in navigator) {
