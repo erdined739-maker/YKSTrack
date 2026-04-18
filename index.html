@@ -322,18 +322,7 @@
             background-color: var(--primary); /* Canli mavi arka plan */
             color: white; /* Beyaz metin */
             border: none;
-            padding: 6px 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .btn-sm {
-            padding: 0 14px;
-            font-size: 0.95rem;
+            padding: 8px 14px;
             min-height: 46px;
             min-width: 120px;
             max-width: 140px;
@@ -1323,11 +1312,11 @@ html, body {
 /* Mobil uyumluluk */
 @media (max-width: 768px) {
     .btn {
-        font-size: 0.75rem;
-        padding: 5px 8px;
-        min-height: 28px;
-        max-width: 120px;
-        gap: 3px;
+        font-size: 0.8rem;
+        padding: 7px 12px;
+        min-height: 34px;
+        max-width: 140px;
+        gap: 4px;
     }
     
     .tab {
@@ -1808,7 +1797,7 @@ html, body {
                 <button class="close-modal" onclick="closeModal('reset-modal')">&times;</button>
             </div>
             <p>Tüm verilerinizi sıfırlamak istediğinize emin misiniz? Bu işlem geri alınamaz.</p>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <div style="display: flex; gap: 10px; margin-top: 20px; justify-content: center;">
                 <button class="btn" onclick="closeModal('reset-modal')">İptal</button>
                 <button class="btn btn-danger" onclick="resetAllData()">Evet, Sıfırla</button>
             </div>
