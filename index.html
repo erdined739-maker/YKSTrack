@@ -2697,26 +2697,15 @@ html, body {
         // Motivasyon mesajlarını güncelle
         function updateMotivation(days) {
             const motivationTexts = [
-                "Her gün düzenli çalışmak, başarının anahtarıdır!",
-                "Zorluklar, başarının değerini artıran süslerdir.",
-                "Pes etmek yok! Hedefine her gün bir adım daha yaklaşıyorsun.",
-                "Bugünün işini yarına bırakma, verimli çalış!",
-                "Sınav senen bir maraton, tempoyu iyi ayarla!",
-                "Kendine inan! Başarabileceğini biliyorum.",
-                "Küçük molalar vererek çalışmak verimliliği artırır.",
-                "Denemelerdeki netlerin her geçen gün artsın!",
-                "Düzenlı tekrar yapmak, öğrendiklerini pekiştirir.",
-                "Hedeflerini asla gözden kaybetme!",
                 // Atatürk sözleri
-                "Başarı bir kişinin değil, milletin ortak eseridir.",
-                "Türk milleti zeki, çalışkan ve fedakârdır.",
                 "Hayatta en hakiki mürşit ilimdir.",
-                "Ey yükselen yeni nesil! İstikbal sizsiniz.",
-                "Benim naciz vücudum, fakat Türkiye Cumhuriyeti ilele ölmeyecektir.",
-                "Egemenlik kayıtsız şartsız milletindir.",
-                "Türk'ün Türk'ten başka dostu yoktur.",
-                "Ne mutlu Türküm diyene!.",
-                "Yurtta sulh, cihanda sulh lazımdır."
+                "İlim ve fennin dışında mürşit aramak gaflettir.",
+                "Dünyada her şey için, medeniyet için, hayat için, muvaffakiyet için en hakiki mürşit ilimdir, fendir.",
+                "Umutsuz durumlar yoktur, umutsuz insanlar vardır.",
+                "Ben hiçbir zaman umudumu yitirmedim.",
+                "Dinlenmemek üzere yürümeye karar verenler asla yorulmazlar.",
+                "Zafer, zafer benimdir diyebilenindir.",
+                "Başarı; başaracağım diye başlayanın ve başardım diyebilenindir."
             ];
             
             const randomIndex = Math.floor(Math.random() * motivationTexts.length);
@@ -3438,7 +3427,7 @@ html, body {
         document.addEventListener('DOMContentLoaded', function() {
             updateCountdown();
             setInterval(updateCountdown, 1000);
-            setInterval(updateMotivation, 2000); // 2 saniyede bir motivasyon sözü değiştir
+            setInterval(updateMotivation, 4000); // 4 saniyede bir motivasyon sözü değiştir
             loadNotesFromLocalStorage(); // Notları yükle
         });
             
