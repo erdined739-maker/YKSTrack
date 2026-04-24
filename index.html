@@ -1802,7 +1802,11 @@ html, body {
                     <div class="countdown-label">Saniye</div>
                 </div>
             </div>
-            <p class="motivation" id="motivation-text">Hedeflerine ulaşmak için çalışmaya devam et!</p>
+            <div class="motivation-box" id="motivation-text">
+                <i class="fas fa-quote-left" style="color: var(--accent); opacity: 0.6; font-size: 0.8rem; margin-right: 8px;"></i>
+                Hedeflerine ulaşmak için çalışmaya devam et!
+                <i class="fas fa-quote-right" style="color: var(--accent); opacity: 0.6; font-size: 0.8rem; margin-left: 8px;"></i>
+            </div>
         </div>
         
         <div class="stats-grid">
@@ -2706,7 +2710,22 @@ html, body {
             ];
             
             const randomIndex = Math.floor(Math.random() * motivationTexts.length);
-            document.getElementById('motivation-text').textContent = motivationTexts[randomIndex];
+            const motivationBox = document.getElementById('motivation-text');
+            const selectedText = motivationTexts[randomIndex];
+            
+            // Animasyonlu metin güncelleme
+            motivationBox.style.opacity = '0';
+            motivationBox.style.transform = 'scale(0.9)';
+            
+            setTimeout(() => {
+                motivationBox.innerHTML = `
+                    <i class="fas fa-quote-left" style="color: var(--accent); opacity: 0.6; font-size: 0.8rem; margin-right: 8px;"></i>
+                    ${selectedText}
+                    <i class="fas fa-quote-right" style="color: var(--accent); opacity: 0.6; font-size: 0.8rem; margin-left: 8px;"></i>
+                `;
+                motivationBox.style.opacity = '1';
+                motivationBox.style.transform = 'scale(1)';
+            }, 300);
         }
         
         // Sınav tipi seçimi (TYT/AYT)
