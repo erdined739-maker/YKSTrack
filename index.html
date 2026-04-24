@@ -1744,7 +1744,7 @@ html, body {
                 </button>
                 
                 <div class="register-link">
-                    <p>Hesabiniz yok mu? <a href="#" onclick="showRegisterPage()">Kayit Ol</a></p>
+                    <p>Hesabiniz yok mu? <a href="#" onclick="auth.showRegisterPage(); return false;">Kayit Ol</a></p>
                 </div>
             </form>
         </div>
@@ -3687,8 +3687,11 @@ if ("serviceWorker" in navigator) {
                 errorDiv.className = 'error-message';
                 errorDiv.textContent = message;
                 
-                const activeForm = document.querySelector('.login-form');
-                activeForm.insertBefore(errorDiv, activeForm.firstChild);
+                // Aktif formu bul
+                const activeForm = document.querySelector('.login-form:not([style*="display: none"])');
+                if (activeForm) {
+                    activeForm.insertBefore(errorDiv, activeForm.firstChild);
+                }
             }
             
             showSuccess(message) {
@@ -3697,8 +3700,11 @@ if ("serviceWorker" in navigator) {
                 successDiv.className = 'success-message';
                 successDiv.textContent = message;
                 
-                const activeForm = document.querySelector('.login-form');
-                activeForm.insertBefore(successDiv, activeForm.firstChild);
+                // Aktif formu bul
+                const activeForm = document.querySelector('.login-form:not([style*="display: none"])');
+                if (activeForm) {
+                    activeForm.insertBefore(successDiv, activeForm.firstChild);
+                }
             }
             
             clearMessages() {
@@ -3706,19 +3712,6 @@ if ("serviceWorker" in navigator) {
                 errorMessages.forEach(msg => msg.remove());
             }
         }
-        
-        // Sayfa geçiş fonksiyonları
-        function showRegisterPage() {
-            if (auth) {
-                auth.showRegisterPage();
-            }
-        }
-        
-        function showLoginPage() { if (auth) { auth.showLoginPage(); } }
-
-function handleRegisterSubmit(e) { e.preventDefault(); if (auth) { auth.handleRegister(e); } return false; }
-
-function logout() { if (auth) { auth.logout(); } }
         
         // şifre göster/gizle fonksiyonları
         function togglePassword() {
@@ -3772,22 +3765,6 @@ function logout() { if (auth) { auth.logout(); } }
             auth = new AuthSystem();
         });
         
-        // Cikis fonksiyonu (ana uygulamada kullanilabilir)
-        function logout() {
-            if (confirm('Cikis yapmak istediginizden emin misiniz?')) {
-                if (auth && typeof auth.logout === 'function') {
-                    auth.logout();
-                } else {
-                    // Manual logout if auth system not available
-                    localStorage.removeItem('yksCurrentUser');
-                    localStorage.removeItem('yksRememberMe');
-                    sessionStorage.removeItem('yksCurrentUser');
-                    document.getElementById('login-page').style.display = 'flex';
-                    document.getElementById('register-page').style.display = 'none';
-                    document.getElementById('main-app').style.display = 'none';
-                }
-            }
-        }
-    </script>
+        </script>
 </body>
 </html>
