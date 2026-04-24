@@ -1949,7 +1949,7 @@ html, body {
                             </select>
                             <input type="text" id="note-topic" placeholder="Konu (Örn: Türev, Osmanlı Devleti)">
                             <button class="btn" onclick="addNote()" style="margin-top: 15px;"><i class="fas fa-sticky-note"></i> Not Ekle</button>
-                            <button class="btn" onclick="showNotesModal()" style="margin-top: 10px; background: var(--secondary);"><i class="fas fa-list"></i> Notlarım</button>
+                            <button class="btn" onclick="showNotesModal()" style="margin-top: 10px; background: var(--secondary); width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500;"><i class="fas fa-list"></i> Notlarım</button>
                         </div>
                         <div style="margin-top: 15px;">
                             <textarea id="note-content" placeholder="Notunuzun içeriğini yazın..." style="width: 100%; min-height: 80px; padding: 10px; border: 2px solid #e9ecef; border-radius: 8px; resize: vertical; font-family: inherit;"></textarea>
@@ -2260,13 +2260,25 @@ html, body {
         // Detaylı istatistikleri güncelle
         function updateDetailedStats() {
             const statsBody = document.getElementById('detailed-stats-body');
+            if (!statsBody) {
+                console.log('detailed-stats-body bulunamadı');
+                return;
+            }
             statsBody.innerHTML = '';
+            
+            console.log('Detaylı istatistikler güncelleniyor...');
+            console.log('questionStats:', questionStats);
+            
+            let hasData = false;
             
             // TYT dersleri için istatistikler
             for (const subject in questionStats.tyt) {
                 if (questionStats.tyt[subject].total > 0) {
+                    hasData = true;
                     const stats = questionStats.tyt[subject];
                     const successRate = stats.correct > 0 ? ((stats.correct / stats.total) * 100).toFixed(1) : 0;
+                    
+                    console.log(`TYT ${subject}:`, stats);
                     
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -2284,6 +2296,7 @@ html, body {
             // AYT dersleri için istatistikler
             for (const subject in questionStats.ayt) {
                 if (questionStats.ayt[subject].total > 0) {
+                    hasData = true;
                     const stats = questionStats.ayt[subject];
                     const successRate = stats.correct > 0 ? ((stats.correct / stats.total) * 100).toFixed(1) : 0;
                     
@@ -2317,6 +2330,19 @@ html, body {
                 `;
                 statsBody.appendChild(totalRow);
             }
+            
+            // Eğer hiç veri yoksa mesaj göster
+            if (!hasData) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `
+                    <td colspan="6" style="text-align: center; color: #666; padding: 20px;">
+                        Henüz soru eklenmemiş. Soru eklemek için "Soru Takibi" bölümünü kullanın.
+                    </td>
+                `;
+                statsBody.appendChild(emptyRow);
+            }
+            
+            console.log('Detaylı istatistikler tamamlandı');
         }
         
         // Bildirim göster
