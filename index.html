@@ -2912,6 +2912,9 @@ html, body {
             // Dağılım grafiklerini güncelle
             updateDistributionCharts();
             
+            // localStorage'a kaydet
+            saveToLocalStorage();
+            
             showNotification(`${totalQuestions} soru başarıyla eklendi!`);
         }
         
