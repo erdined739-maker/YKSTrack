@@ -317,38 +317,6 @@
             text-align: center;
         }
         
-        /* Notlar modali için özel liste stili */
-        #notes-list-modal,
-        #notes-list {
-            padding: 0;
-        }
-        
-        #notes-list-modal li,
-        #notes-list li {
-            display: block;
-            width: 100%;
-            padding: 0;
-            border: none;
-            text-align: left;
-        }
-        
-        #notes-list-modal .note-item,
-        #notes-list .note-item {
-            width: 100%;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-        }
-        
-        #notes-list-modal .note-content,
-        #notes-list .note-content {
-            color: #333;
-            white-space: pre-wrap;
-            margin-top: 10px;
-        }
-        
         /* Genel buton stili - Tüm butonlar için temel görünüm */
         .btn {
             background-color: var(--primary); /* Canli mavi arka plan */
@@ -1744,7 +1712,7 @@ html, body {
                 </button>
                 
                 <div class="register-link">
-                    <p>Hesabiniz yok mu? <a href="#" onclick="auth.showRegisterPage(); return false;">Kayit Ol</a></p>
+                    <p>Hesabiniz yok mu? <a href="#" onclick="showRegisterPage()">Kayit Ol</a></p>
                 </div>
             </form>
         </div>
@@ -2351,146 +2319,6 @@ html, body {
             }, 3000);
         }
         
-        let notificationTimersStarted = false;
-
-        function requestNotificationPermission() {
-            if (!('Notification' in window)) return;
-            if (Notification.permission === 'default') {
-                Notification.requestPermission().then(permission => {
-                    if (permission === 'granted') {
-                        scheduleDailyReminder();
-                        scheduleTestNotification();
-                    }
-                });
-            }
-        }
-
-        function sendSystemNotification(title, body, tag) {
-            if (!('Notification' in window)) return;
-            if (Notification.permission !== 'granted') return;
-
-            try {
-                new Notification(title, {
-                    body: body,
-                    tag: tag,
-                    icon: 'logo.png',
-                    badge: 'logo.png'
-                });
-            } catch (error) {
-                console.log('Sistem bildirimi gönderilemedi:', error);
-            }
-        }
-
-        function scheduleNotificationAt(hour, minute, callback) {
-            const now = new Date();
-            const target = new Date(now.getTime());
-            target.setHours(hour, minute, 0, 0);
-            if (target <= now) {
-                target.setDate(target.getDate() + 1);
-            }
-            const delay = target - now;
-            setTimeout(() => {
-                callback();
-                scheduleNotificationAt(hour, minute, callback);
-            }, delay);
-        }
-
-        function getDailyGoals() {
-            const items = document.querySelectorAll('#targets-list li');
-            const goals = [];
-            items.forEach(item => {
-                const checkbox = item.querySelector('input[type="checkbox"]');
-                goals.push({ completed: checkbox ? checkbox.checked : false });
-            });
-            return goals;
-        }
-
-        function getLoginDates() {
-            try {
-                return JSON.parse(localStorage.getItem('yksLoginDates') || '[]');
-            } catch (error) {
-                return [];
-            }
-        }
-
-        function recordLoginDate() {
-            const today = new Date().toISOString().split('T')[0];
-            const loginDates = getLoginDates();
-            if (!loginDates.includes(today)) {
-                loginDates.push(today);
-                localStorage.setItem('yksLoginDates', JSON.stringify(loginDates.slice(-30)));
-            }
-        }
-
-        function checkDailyReminderConditions() {
-            const dailyGoals = getDailyGoals();
-            const incompleteCount = dailyGoals.filter(goal => !goal.completed).length;
-            const loginDates = getLoginDates();
-            const today = new Date().toISOString().split('T')[0];
-            const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-            const hasLoginToday = loginDates.includes(today);
-            const hasLoginYesterday = loginDates.includes(yesterday);
-
-            if (incompleteCount > 0) {
-                sendSystemNotification(
-                    'YKS Asistanı - Hedef Hatırlatma',
-                    `${incompleteCount} günlük hedefin tamamlanmamış. Hemen göz at!`,
-                    'daily-goals'
-                );
-            }
-
-            if (!hasLoginToday && !hasLoginYesterday && loginDates.length >= 2) {
-                sendSystemNotification(
-                    'YKS Asistanı - Seni Özledik',
-                    '2 gündür giriş yapmadın. Bugün geri dön ve hedeflerini takip et!',
-                    'missed-days'
-                );
-            }
-        }
-
-        function scheduleDailyReminder() {
-            if (!('Notification' in window)) return;
-            if (Notification.permission !== 'granted') return;
-            scheduleNotificationAt(18, 0, () => {
-                checkDailyReminderConditions();
-            });
-        }
-
-        function scheduleTestNotification() {
-            if (!('Notification' in window)) return;
-            if (Notification.permission !== 'granted') return;
-            if (localStorage.getItem('yksTestNotificationSent') === 'true') {
-                return;
-            }
-
-            const now = new Date();
-            const testTime = new Date(now.getTime());
-            testTime.setHours(14, 25, 0, 0);
-            if (testTime <= now) {
-                testTime.setDate(testTime.getDate() + 1);
-            }
-
-            const delay = testTime - now;
-            setTimeout(() => {
-                sendSystemNotification(
-                    'YKS Asistanı - Deneme Bildirimi',
-                    'Bu bir test bildirimidir. Sisteminiz düzgün çalışıyor.',
-                    'test-notification'
-                );
-                localStorage.setItem('yksTestNotificationSent', 'true');
-            }, delay);
-        }
-
-        function ensureNotificationSchedule() {
-            if (notificationTimersStarted) return;
-            notificationTimersStarted = true;
-            requestNotificationPermission();
-            if ('Notification' in window && Notification.permission === 'granted') {
-                scheduleDailyReminder();
-                scheduleTestNotification();
-            }
-        }
-
         // Modal göster
         function showResetModal() {
             const confirmed = confirm('TÜM VERILERINIZ SILINECEK!\n\nBu islem geri alınamaz:\n- Çözülen tüm sorular\n- Günlük hedefler\n- Calisma saatleri\n- Konular ve kaynaklar\n- Tüm istatistikler\n\nEmin misiniz?');
@@ -3504,9 +3332,6 @@ if ("serviceWorker" in navigator) {
             }
             
             init() {
-                // Bildirim izni iste
-                this.requestNotificationPermission();
-                
                 // Sayfa yüklendiğinde kontrol et
                 if (this.currentUser) {
                     this.showMainApp();
@@ -3578,7 +3403,6 @@ if ("serviceWorker" in navigator) {
                 
                 // Giriş başarılı
                 this.saveCurrentUser(user, rememberMe);
-                this.recordLoginDate();
                 this.showSuccess('Giris basarili! Yonlendiriliyorsunuz...');
                 
                 setTimeout(() => {
@@ -3622,18 +3446,14 @@ if ("serviceWorker" in navigator) {
                 this.users.push(newUser);
                 this.saveUsers();
                 
-                this.showSuccess('Kayit basarili! Giris yapiliyorsunuz...');
-                
-                this.saveCurrentUser(newUser, false);
-                this.currentUser = newUser;
-                this.recordLoginDate();
+                this.showSuccess('Kayit basarili! Giris yapabilirsiniz.');
                 
                 // Formu temizle
                 document.getElementById('register-form').reset();
                 
-                // Ana uygulamaya yönlendir
+                // Giriş sayfasına yönlendir
                 setTimeout(() => {
-                    this.showMainApp();
+                    this.showLoginPage();
                 }, 1500);
             }
             
@@ -3668,9 +3488,6 @@ if ("serviceWorker" in navigator) {
                 
                 // Kullanıcı bilgisini göster
                 this.updateUserInfo();
-                
-                // Bildirim planlamalarını kur
-                ensureNotificationSchedule();
             }
             
             updateUserInfo() {
@@ -3687,11 +3504,8 @@ if ("serviceWorker" in navigator) {
                 errorDiv.className = 'error-message';
                 errorDiv.textContent = message;
                 
-                // Aktif formu bul
-                const activeForm = document.querySelector('.login-form:not([style*="display: none"])');
-                if (activeForm) {
-                    activeForm.insertBefore(errorDiv, activeForm.firstChild);
-                }
+                const activeForm = document.querySelector('.login-form');
+                activeForm.insertBefore(errorDiv, activeForm.firstChild);
             }
             
             showSuccess(message) {
@@ -3700,11 +3514,8 @@ if ("serviceWorker" in navigator) {
                 successDiv.className = 'success-message';
                 successDiv.textContent = message;
                 
-                // Aktif formu bul
-                const activeForm = document.querySelector('.login-form:not([style*="display: none"])');
-                if (activeForm) {
-                    activeForm.insertBefore(successDiv, activeForm.firstChild);
-                }
+                const activeForm = document.querySelector('.login-form');
+                activeForm.insertBefore(successDiv, activeForm.firstChild);
             }
             
             clearMessages() {
@@ -3712,6 +3523,19 @@ if ("serviceWorker" in navigator) {
                 errorMessages.forEach(msg => msg.remove());
             }
         }
+        
+        // Sayfa geçiş fonksiyonları
+        function showRegisterPage() {
+            if (auth) {
+                auth.showRegisterPage();
+            }
+        }
+        
+        function showLoginPage() { if (auth) { auth.showLoginPage(); } }
+
+function handleRegisterSubmit(e) { e.preventDefault(); if (auth) { auth.handleRegister(e); } return false; }
+
+function logout() { if (auth) { auth.logout(); } }
         
         // şifre göster/gizle fonksiyonları
         function togglePassword() {
@@ -3765,6 +3589,22 @@ if ("serviceWorker" in navigator) {
             auth = new AuthSystem();
         });
         
-        </script>
+        // Cikis fonksiyonu (ana uygulamada kullanilabilir)
+        function logout() {
+            if (confirm('Cikis yapmak istediginizden emin misiniz?')) {
+                if (auth && typeof auth.logout === 'function') {
+                    auth.logout();
+                } else {
+                    // Manual logout if auth system not available
+                    localStorage.removeItem('yksCurrentUser');
+                    localStorage.removeItem('yksRememberMe');
+                    sessionStorage.removeItem('yksCurrentUser');
+                    document.getElementById('login-page').style.display = 'flex';
+                    document.getElementById('register-page').style.display = 'none';
+                    document.getElementById('main-app').style.display = 'none';
+                }
+            }
+        }
+    </script>
 </body>
 </html>
