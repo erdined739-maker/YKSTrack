@@ -3426,7 +3426,7 @@ html, body {
         // Sayfa yüklendiğinde geri sayımı başlat
         document.addEventListener('DOMContentLoaded', function() {
             updateCountdown();
-            setInterval(updateCountdown, 1000);
+            setInterval(updateCountdown, 3000);
             setInterval(updateMotivation, 4000); // 4 saniyede bir motivasyon sözü değiştir
             loadNotesFromLocalStorage(); // Notları yükle
         });
