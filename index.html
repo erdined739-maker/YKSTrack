@@ -876,50 +876,33 @@
         
         /* Performans İstatistikleri */
         .performance-stats {
-            display: flex;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
             margin-top: 15px;
-            width: 100%;
-            box-sizing: border-box;
         }
         
         .performance-card {
             background: #f8f9fa;
-            padding: 12px 20px;
+            padding: 10px;
             border-radius: 8px;
             text-align: center;
-            min-height: 60px;
+            min-height: 60px; /* Eşit yükseklik için minimum yükseklik */
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center;
-            width: auto;
-            min-width: 120px;
-            max-width: 200px;
-            box-sizing: border-box;
-            overflow: hidden;
         }
         
         .performance-value {
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             margin-bottom: 5px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            width: 100%;
         }
         
         .performance-label {
             display: flex;
             align-items: center;
-            justify-content: center;
-            gap: 4px;
-            font-size: 0.8rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            width: 100%;
+            gap: 8px;
         }
         
         /* Detaylı İstatistikler Bölümü */
@@ -928,13 +911,7 @@
             border-radius: 12px;
             padding: 15px;
             margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .stats-table-container {
-            overflow-x: auto;
-            max-height: 250px;
+            max-height: 400px;
             overflow-y: auto;
         }
         
@@ -1821,9 +1798,7 @@ html, body {
                     <div class="countdown-label">Saniye</div>
                 </div>
             </div>
-            <div class="motivation-box">
-    <p class="motivation" id="motivation-text">Hedeflerine ulaşmak için çalışmaya devam et!</p>
-</div>
+            <p class="motivation" id="motivation-text">Hedeflerine ulaşmak için çalışmaya devam et!</p>
         </div>
         
         <div class="stats-grid">
@@ -1949,7 +1924,7 @@ html, body {
                             </select>
                             <input type="text" id="note-topic" placeholder="Konu (Örn: Türev, Osmanlı Devleti)">
                             <button class="btn" onclick="addNote()" style="margin-top: 15px;"><i class="fas fa-sticky-note"></i> Not Ekle</button>
-                            <button class="btn" onclick="showNotesModal()" style="margin-top: 10px; background: var(--secondary); width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 500;"><i class="fas fa-list"></i> Notlarım</button>
+                            <button class="btn" onclick="showNotesModal()" style="margin-top: 10px; background: var(--secondary);"><i class="fas fa-list"></i> Notlarım</button>
                         </div>
                         <div style="margin-top: 15px;">
                             <textarea id="note-content" placeholder="Notunuzun içeriğini yazın..." style="width: 100%; min-height: 80px; padding: 10px; border: 2px solid #e9ecef; border-radius: 8px; resize: vertical; font-family: inherit;"></textarea>
@@ -2053,6 +2028,7 @@ html, body {
                             <span>Yanlış: <span id="legend-incorrect">0</span></span>
                         </div>
                         <div class="legend-item">
+                            <div class="legend-color legend-empty"></div>
                             <span>Boş: <span id="legend-empty">0</span></span>
                         </div>
                     </div>
@@ -2061,6 +2037,18 @@ html, body {
                         <div class="performance-card">
                             <div class="performance-value" id="net-value">0</div>
                             <div class="performance-label">Net</div>
+                        </div>
+                        <div class="performance-card">
+                            <div class="performance-value" id="accuracy-value">0%</div>
+                            <div class="performance-label">Doğruluk</div>
+                        </div>
+                        <div class="performance-card">
+                            <div class="performance-value" id="correct-ratio">0%</div>
+                            <div class="performance-label">Doğru Oranı</div>
+                        </div>
+                        <div class="performance-card">
+                            <div class="performance-value" id="incorrect-ratio">0%</div>
+                            <div class="performance-label">Yanlış Oranı</div>
                         </div>
                     </div>
                 </div>
@@ -2260,25 +2248,13 @@ html, body {
         // Detaylı istatistikleri güncelle
         function updateDetailedStats() {
             const statsBody = document.getElementById('detailed-stats-body');
-            if (!statsBody) {
-                console.log('detailed-stats-body bulunamadı');
-                return;
-            }
             statsBody.innerHTML = '';
-            
-            console.log('Detaylı istatistikler güncelleniyor...');
-            console.log('questionStats:', questionStats);
-            
-            let hasData = false;
             
             // TYT dersleri için istatistikler
             for (const subject in questionStats.tyt) {
                 if (questionStats.tyt[subject].total > 0) {
-                    hasData = true;
                     const stats = questionStats.tyt[subject];
                     const successRate = stats.correct > 0 ? ((stats.correct / stats.total) * 100).toFixed(1) : 0;
-                    
-                    console.log(`TYT ${subject}:`, stats);
                     
                     const row = document.createElement('tr');
                     row.innerHTML = `
@@ -2296,7 +2272,6 @@ html, body {
             // AYT dersleri için istatistikler
             for (const subject in questionStats.ayt) {
                 if (questionStats.ayt[subject].total > 0) {
-                    hasData = true;
                     const stats = questionStats.ayt[subject];
                     const successRate = stats.correct > 0 ? ((stats.correct / stats.total) * 100).toFixed(1) : 0;
                     
@@ -2330,19 +2305,6 @@ html, body {
                 `;
                 statsBody.appendChild(totalRow);
             }
-            
-            // Eğer hiç veri yoksa mesaj göster
-            if (!hasData) {
-                const emptyRow = document.createElement('tr');
-                emptyRow.innerHTML = `
-                    <td colspan="6" style="text-align: center; color: #666; padding: 20px;">
-                        Henüz soru eklenmemiş. Soru eklemek için "Soru Takibi" bölümünü kullanın.
-                    </td>
-                `;
-                statsBody.appendChild(emptyRow);
-            }
-            
-            console.log('Detaylı istatistikler tamamlandı');
         }
         
         // Bildirim göster
@@ -2937,9 +2899,6 @@ html, body {
             
             // Dağılım grafiklerini güncelle
             updateDistributionCharts();
-            
-            // localStorage'a kaydet
-            saveToLocalStorage();
             
             showNotification(`${totalQuestions} soru başarıyla eklendi!`);
         }
