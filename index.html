@@ -1519,11 +1519,18 @@ html, body {
 .form-group label {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     color: var(--dark);
-    font-weight: 500;
-    margin-bottom: 8px;
-    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+}
+
+.form-group label i {
+    color: var(--primary);
+    font-size: 1rem;
+    width: 20px;
+    text-align: center;
 }
 
 .form-group input {
@@ -1924,7 +1931,7 @@ html, body {
                             </select>
                             <input type="text" id="note-topic" placeholder="Konu (Örn: Türev, Osmanlı Devleti)">
                             <button class="btn" onclick="addNote()" style="margin-top: 15px;"><i class="fas fa-sticky-note"></i> Not Ekle</button>
-                            <button class="btn" onclick="showNotesModal()" style="margin-top: 10px; background: var(--secondary);"><i class="fas fa-list"></i> Notlarım</button>
+                            <button class="btn" onclick="showNotesModal()" style="margin-top: 10px; background: var(--secondary); width: 100%;"><i class="fas fa-list"></i> Notlarım</button>
                         </div>
                         <div style="margin-top: 15px;">
                             <textarea id="note-content" placeholder="Notunuzun içeriğini yazın..." style="width: 100%; min-height: 80px; padding: 10px; border: 2px solid #e9ecef; border-radius: 8px; resize: vertical; font-family: inherit;"></textarea>
