@@ -880,17 +880,21 @@
             justify-content: center;
             align-items: center;
             margin-top: 15px;
+            width: 100%;
         }
         
         .performance-card {
             background: #f8f9fa;
-            padding: 10px;
+            padding: 15px 20px;
             border-radius: 8px;
             text-align: center;
-            min-height: 60px; /* Eşit yükseklik için minimum yükseklik */
+            min-height: 80px;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center;
+            width: 120px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
         
         .performance-value {
@@ -2063,6 +2067,7 @@ html, body {
                 </div>
 
                 <div class="reset-section">
+                    <button class="btn" onclick="showDistributionModal()" style="background: var(--primary); margin-right: 10px;"><i class="fas fa-chart-bar"></i> Derslere Göre Dağılım</button>
                     <button class="btn btn-danger" onclick="showResetModal()"><i class="fas fa-trash"></i> Tüm Verileri Sıfırla</button>
                 </div>
             </div>
@@ -2235,11 +2240,18 @@ html, body {
         // Detaylı istatistikleri güncelle
         function updateDetailedStats() {
             const statsBody = document.getElementById('detailed-stats-body');
+            if (!statsBody) {
+                console.log('detailed-stats-body bulunamadı');
+                return;
+            }
             statsBody.innerHTML = '';
+            
+            let hasData = false;
             
             // TYT dersleri için istatistikler
             for (const subject in questionStats.tyt) {
                 if (questionStats.tyt[subject].total > 0) {
+                    hasData = true;
                     const stats = questionStats.tyt[subject];
                     const successRate = stats.correct > 0 ? ((stats.correct / stats.total) * 100).toFixed(1) : 0;
                     
@@ -2259,6 +2271,7 @@ html, body {
             // AYT dersleri için istatistikler
             for (const subject in questionStats.ayt) {
                 if (questionStats.ayt[subject].total > 0) {
+                    hasData = true;
                     const stats = questionStats.ayt[subject];
                     const successRate = stats.correct > 0 ? ((stats.correct / stats.total) * 100).toFixed(1) : 0;
                     
@@ -2277,6 +2290,7 @@ html, body {
             
             // Toplam satırı ekle
             if (totalCorrect + totalIncorrect + totalEmpty > 0) {
+                hasData = true;
                 const totalSuccessRate = totalCorrect > 0 ? ((totalCorrect / (totalCorrect + totalIncorrect + totalEmpty)) * 100).toFixed(1) : 0;
                 
                 const totalRow = document.createElement('tr');
@@ -2291,6 +2305,17 @@ html, body {
                     <td>${totalSuccessRate}%</td>
                 `;
                 statsBody.appendChild(totalRow);
+            }
+            
+            // Eğer hiç veri yoksa mesaj göster
+            if (!hasData) {
+                const emptyRow = document.createElement('tr');
+                emptyRow.innerHTML = `
+                    <td colspan="6" style="text-align: center; color: #666; padding: 20px;">
+                        Henüz soru eklenmemiş. Soru eklemek için "Soru Takibi" bölümünü kullanın.
+                    </td>
+                `;
+                statsBody.appendChild(emptyRow);
             }
         }
         
