@@ -1680,7 +1680,7 @@ html, body {
     <div id="login-page" class="login-container">
         <div class="login-card">
             <div class="login-header">
-                <h1><i class="fas fa-graduation-cap"></i> YKS Asistanı</h1>
+                <h1><img src="logo.png" alt="YKS Asistanı Logo" class="custom-logo"> YKS Asistanı</h1>
                 <p>Hesabınıza giriş yapın</p>
             </div>
             
@@ -2607,8 +2607,31 @@ html, body {
             // localStorage'a kaydet
             saveToLocalStorage();
             
+            // Hedefler durumunu kaydet
+            saveTargetsStatus();
+            
             // Bildirim göster
             showNotification('Hedefler başarıyla güncellendi!');
+        }
+        
+        // Hedefler tamamlanma durumunu kaydet
+        function saveTargetsStatus() {
+            const targetsList = document.getElementById('targets-list');
+            const items = targetsList.querySelectorAll('li');
+            const targets = [];
+            
+            items.forEach((item, index) => {
+                const checkbox = item.querySelector('input[type="checkbox"]');
+                const textElement = item.querySelector('.target-text');
+                targets.push({
+                    id: index,
+                    text: textElement ? textElement.textContent : '',
+                    completed: checkbox ? checkbox.checked : false,
+                    date: new Date().toISOString().split('T')[0]
+                });
+            });
+            
+            localStorage.setItem('yksTargets', JSON.stringify(targets));
         }
         
         // Hedef ekleme fonksiyonu - Kullanıcının girdiği hedefleri listeye ekler ve kaydeder
@@ -2651,6 +2674,9 @@ html, body {
             // Verileri localStorage'a kaydet
             saveToLocalStorage();
             
+            // Hedefler durumunu kaydet
+            saveTargetsStatus();
+            
             // Başarı bildirimi göster
             showNotification('Hedef başarıyla eklendi!');
         }
@@ -2665,6 +2691,9 @@ html, body {
             
             // localStorage'a kaydet
             saveToLocalStorage();
+            
+            // Hedefler durumunu kaydet
+            saveTargetsStatus();
             
             // Bildirim göster
             showNotification('Hedef başarıyla silindi!');
@@ -2735,6 +2764,9 @@ html, body {
             
             // localStorage'a kaydet
             saveToLocalStorage();
+            
+            // Hedefler durumunu kaydet
+            saveTargetsStatus();
         }
         
         // İlerleme çubuklarını güncelleme
@@ -3332,6 +3364,9 @@ if ("serviceWorker" in navigator) {
             }
             
             init() {
+                // Bildirim izni iste
+                this.requestNotificationPermission();
+                
                 // Sayfa yüklendiğinde kontrol et
                 if (this.currentUser) {
                     this.showMainApp();
@@ -3342,6 +3377,13 @@ if ("serviceWorker" in navigator) {
                 // Form event listeners
                 document.getElementById('login-form').addEventListener('submit', (e) => this.handleLogin(e));
                 document.getElementById('register-form').addEventListener('submit', (e) => this.handleRegister(e));
+            }
+            
+            // Bildirim izni iste
+            requestNotificationPermission() {
+                if ('Notification' in window && Notification.permission === 'default') {
+                    Notification.requestPermission();
+                }
             }
             
             loadUsers() {
@@ -3403,6 +3445,7 @@ if ("serviceWorker" in navigator) {
                 
                 // Giriş başarılı
                 this.saveCurrentUser(user, rememberMe);
+                this.recordLoginDate();
                 this.showSuccess('Giris basarili! Yonlendiriliyorsunuz...');
                 
                 setTimeout(() => {
@@ -3446,14 +3489,19 @@ if ("serviceWorker" in navigator) {
                 this.users.push(newUser);
                 this.saveUsers();
                 
-                this.showSuccess('Kayit basarili! Giris yapabilirsiniz.');
+                // Kayıt yapan kullanıcıyı otomatik olarak giriş yaptır
+                this.currentUser = newUser;
+                this.saveCurrentUser(newUser, false);
+                this.recordLoginDate();
+                
+                this.showSuccess('Kayit basarili! Giris yapiliyorsunuz...');
                 
                 // Formu temizle
                 document.getElementById('register-form').reset();
                 
-                // Giriş sayfasına yönlendir
+                // Ana uygulamaya yönlendir
                 setTimeout(() => {
-                    this.showLoginPage();
+                    this.showMainApp();
                 }, 1500);
             }
             
@@ -3488,6 +3536,28 @@ if ("serviceWorker" in navigator) {
                 
                 // Kullanıcı bilgisini göster
                 this.updateUserInfo();
+                
+                // Service Worker'a bildirim kontrolünü tetikle
+                if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+                    navigator.serviceWorker.controller.postMessage({
+                        type: 'CHECK_NOTIFICATIONS'
+                    });
+                }
+            }
+            
+            // Giriş tarihini kaydet
+            recordLoginDate() {
+                const today = new Date().toISOString().split('T')[0];
+                let loginDates = JSON.parse(localStorage.getItem('yksLoginDates') || '[]');
+                
+                if (!loginDates.includes(today)) {
+                    loginDates.push(today);
+                    // Son 30 günü tut
+                    if (loginDates.length > 30) {
+                        loginDates = loginDates.slice(-30);
+                    }
+                    localStorage.setItem('yksLoginDates', JSON.stringify(loginDates));
+                }
             }
             
             updateUserInfo() {
