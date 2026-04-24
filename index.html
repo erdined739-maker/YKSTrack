@@ -2689,9 +2689,6 @@ html, body {
             document.getElementById('seconds').textContent = seconds;
             
             document.getElementById('remaining-days').textContent = days;
-            
-            // Motivasyon mesajlarını güncelle
-            updateMotivation(days);
         }
         
         // Motivasyon mesajlarını güncelle
@@ -3426,8 +3423,9 @@ html, body {
         // Sayfa yüklendiğinde geri sayımı başlat
         document.addEventListener('DOMContentLoaded', function() {
             updateCountdown();
+            updateMotivation(); // İlk kez çalıştır
             setInterval(updateCountdown, 1000);
-            setInterval(updateMotivation, 6000); // 4 saniyede bir motivasyon sözü değiştir
+            setInterval(updateMotivation, 4000); // 4 saniyede bir motivasyon sözü değiştir
             loadNotesFromLocalStorage(); // Notları yükle
         });
             
