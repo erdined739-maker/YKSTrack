@@ -1657,63 +1657,6 @@ html, body {
     border-left: 4px solid #28a745;
 }
 
-/* Modal Stilleri */
-.modal {
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    width: 90%;
-    max-width: 400px;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-.modal-header {
-    padding: 20px;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-header h2 {
-    margin: 0;
-    color: var(--primary);
-}
-
-.close-modal {
-    font-size: 28px;
-    font-weight: bold;
-    color: #aaa;
-    cursor: pointer;
-}
-
-.close-modal:hover {
-    color: #000;
-}
-
-.modal-body {
-    padding: 20px;
-}
-
-.modal-body p {
-    margin-bottom: 15px;
-    color: var(--dark);
-}
-
 /* Mobil Uyumluluk */
 @media (max-width: 768px) {
     .login-card {
@@ -1732,11 +1675,6 @@ html, body {
     .login-btn {
         padding: 12px;
         font-size: 1rem;
-    }
-    
-    .modal-content {
-        width: 95%;
-        margin: 10px;
     }
 }
     </style>
@@ -1770,7 +1708,7 @@ html, body {
                         <span class="checkmark"></span>
                         Beni hatirla
                     </label>
-                    <a href="#" class="forgot-password" onclick="openForgotPasswordModal()">Sifremi unuttum</a>
+                    <a href="#" class="forgot-password">Sifremi unuttum</a>
                 </div>
                 
                 <button type="submit" class="btn btn-primary login-btn">
@@ -1827,53 +1765,6 @@ html, body {
                     <p>Zaten hesabiniz var mi? <a href="#" onclick="showLoginPage()">Giris Yap</a></p>
                 </div>
             </form>
-        </div>
-    </div>
-    
-    <!-- Şifre Sıfırlama Modalı -->
-    <div id="forgot-password-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2><i class="fas fa-key"></i> Şifre Sıfırlama</h2>
-                <span class="close-modal" onclick="closeForgotPasswordModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <div id="forgot-step-1">
-                    <p>E-posta adresinizi girin. Size şifre sıfırlama kodu göndereceğiz.</p>
-                    <form id="forgot-email-form">
-                        <div class="form-group">
-                            <label for="forgot-email"><i class="fas fa-envelope"></i> E-posta</label>
-                            <input type="email" id="forgot-email" name="email" placeholder="ornek@email.com" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Kod Gönder</button>
-                    </form>
-                </div>
-                <div id="forgot-step-2" style="display: none;">
-                    <p>E-posta adresinize gönderilen 6 haneli kodu girin.</p>
-                    <form id="forgot-code-form">
-                        <div class="form-group">
-                            <label for="forgot-code"><i class="fas fa-lock"></i> Sıfırlama Kodu</label>
-                            <input type="text" id="forgot-code" name="code" placeholder="123456" maxlength="6" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Kodu Doğrula</button>
-                        <button type="button" class="btn btn-secondary" onclick="resendCode()">Kodu Tekrar Gönder</button>
-                    </form>
-                </div>
-                <div id="forgot-step-3" style="display: none;">
-                    <p>Yeni şifrenizi girin.</p>
-                    <form id="forgot-password-form">
-                        <div class="form-group">
-                            <label for="new-password"><i class="fas fa-lock"></i> Yeni Şifre</label>
-                            <input type="password" id="new-password" name="password" placeholder="Yeni şifrenizi girin" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="confirm-new-password"><i class="fas fa-lock"></i> Şifre Tekrar</label>
-                            <input type="password" id="confirm-new-password" name="confirmPassword" placeholder="Şifrenizi tekrar girin" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Şifreyi Güncelle</button>
-                    </form>
-                </div>
-            </div>
         </div>
     </div>
     
@@ -3618,11 +3509,6 @@ if ("serviceWorker" in navigator) {
                 // Form event listeners
                 document.getElementById('login-form').addEventListener('submit', (e) => this.handleLogin(e));
                 document.getElementById('register-form').addEventListener('submit', (e) => this.handleRegister(e));
-                
-                // Forgot password event listeners
-                document.getElementById('forgot-email-form').addEventListener('submit', (e) => this.handleForgotEmail(e));
-                document.getElementById('forgot-code-form').addEventListener('submit', (e) => this.handleForgotCode(e));
-                document.getElementById('forgot-password-form').addEventListener('submit', (e) => this.handleForgotPassword(e));
             }
             
             loadUsers() {
@@ -3747,137 +3633,6 @@ if ("serviceWorker" in navigator) {
                 this.showLoginPage();
             }
             
-            // Forgot Password Methods
-            handleForgotEmail(e) {
-                e.preventDefault();
-                const email = document.getElementById('forgot-email').value.trim();
-                
-                // Kullanıcıyı bul
-                const user = this.users.find(u => u.email === email);
-                if (!user) {
-                    this.showModalError('Bu e-posta adresi ile kayıtlı kullanıcı bulunamadı!');
-                    return;
-                }
-                
-                // Rastgele 6 haneli kod üret
-                const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
-                
-                // Kodu geçici olarak sakla (gerçek uygulamada email gönderilir)
-                sessionStorage.setItem('resetCode', resetCode);
-                sessionStorage.setItem('resetEmail', email);
-                
-                // Simüle edilmiş email gönderme - gerçek uygulamada email servisi kullanılır
-                alert(`Şifre sıfırlama kodu: ${resetCode}\n\nBu kodu modal'daki forma girin.`);
-                
-                this.showModalSuccess('Kod e-posta adresinize gönderildi!');
-                
-                // İkinci adıma geç
-                setTimeout(() => {
-                    document.getElementById('forgot-step-1').style.display = 'none';
-                    document.getElementById('forgot-step-2').style.display = 'block';
-                    document.getElementById('forgot-step-3').style.display = 'none';
-                }, 1500);
-            }
-            
-            handleForgotCode(e) {
-                e.preventDefault();
-                const enteredCode = document.getElementById('forgot-code').value.trim();
-                const storedCode = sessionStorage.getItem('resetCode');
-                
-                if (enteredCode !== storedCode) {
-                    this.showModalError('Geçersiz kod! Lütfen tekrar deneyin.');
-                    return;
-                }
-                
-                this.showModalSuccess('Kod doğrulandı! Yeni şifrenizi girin.');
-                
-                // Üçüncü adıma geç
-                setTimeout(() => {
-                    document.getElementById('forgot-step-1').style.display = 'none';
-                    document.getElementById('forgot-step-2').style.display = 'none';
-                    document.getElementById('forgot-step-3').style.display = 'block';
-                }, 1500);
-            }
-            
-            handleForgotPassword(e) {
-                e.preventDefault();
-                const newPassword = document.getElementById('new-password').value;
-                const confirmPassword = document.getElementById('confirm-new-password').value;
-                const email = sessionStorage.getItem('resetEmail');
-                
-                if (newPassword !== confirmPassword) {
-                    this.showModalError('Şifreler eşleşmiyor!');
-                    return;
-                }
-                
-                if (newPassword.length < 6) {
-                    this.showModalError('Şifre en az 6 karakter olmalı!');
-                    return;
-                }
-                
-                // Kullanıcıyı bul ve şifreyi güncelle
-                const userIndex = this.users.findIndex(u => u.email === email);
-                if (userIndex !== -1) {
-                    this.users[userIndex].password = newPassword;
-                    this.saveUsers();
-                    
-                    // Geçici verileri temizle
-                    sessionStorage.removeItem('resetCode');
-                    sessionStorage.removeItem('resetEmail');
-                    
-                    this.showModalSuccess('Şifre başarıyla güncellendi! Giriş yapabilirsiniz.');
-                    
-                    // Modal'ı kapat ve login'e dön
-                    setTimeout(() => {
-                        closeForgotPasswordModal();
-                        this.showLoginPage();
-                    }, 2000);
-                }
-            }
-            
-            showModalError(message) {
-                this.clearModalMessages();
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'error-message';
-                errorDiv.textContent = message;
-                errorDiv.style.cssText = `
-                    background: #f8d7da;
-                    color: #721c24;
-                    padding: 10px;
-                    border-radius: 5px;
-                    margin-bottom: 15px;
-                    font-size: 0.9rem;
-                    border-left: 4px solid #dc3545;
-                `;
-                
-                const modalBody = document.querySelector('.modal-body');
-                modalBody.insertBefore(errorDiv, modalBody.firstChild);
-            }
-            
-            showModalSuccess(message) {
-                this.clearModalMessages();
-                const successDiv = document.createElement('div');
-                successDiv.className = 'success-message';
-                successDiv.textContent = message;
-                successDiv.style.cssText = `
-                    background: #d4edda;
-                    color: #155724;
-                    padding: 10px;
-                    border-radius: 5px;
-                    margin-bottom: 15px;
-                    font-size: 0.9rem;
-                    border-left: 4px solid #28a745;
-                `;
-                
-                const modalBody = document.querySelector('.modal-body');
-                modalBody.insertBefore(successDiv, modalBody.firstChild);
-            }
-            
-            clearModalMessages() {
-                const messages = document.querySelectorAll('.modal-body .error-message, .modal-body .success-message');
-                messages.forEach(msg => msg.remove());
-            }
-            
             showLoginPage() {
                 document.getElementById('login-page').style.display = 'flex';
                 document.getElementById('register-page').style.display = 'none';
@@ -3943,51 +3698,6 @@ if ("serviceWorker" in navigator) {
             }
         }
         
-        function showLoginPage() {
-            if (auth) {
-                auth.showLoginPage();
-            }
-        }
-        
-        // Forgot Password Modal Functions
-        function openForgotPasswordModal() {
-            document.getElementById('forgot-password-modal').style.display = 'flex';
-            document.getElementById('forgot-step-1').style.display = 'block';
-            document.getElementById('forgot-step-2').style.display = 'none';
-            document.getElementById('forgot-step-3').style.display = 'none';
-            document.getElementById('forgot-email-form').reset();
-            document.getElementById('forgot-code-form').reset();
-            document.getElementById('forgot-password-form').reset();
-            if (auth) {
-                auth.clearModalMessages();
-            }
-        }
-        
-        function closeForgotPasswordModal() {
-            document.getElementById('forgot-password-modal').style.display = 'none';
-            // Geçici verileri temizle
-            sessionStorage.removeItem('resetCode');
-            sessionStorage.removeItem('resetEmail');
-        }
-        
-        function resendCode() {
-            const email = sessionStorage.getItem('resetEmail');
-            if (!email) {
-                alert('Lütfen önce e-posta adresinizi girin.');
-                return;
-            }
-            
-            // Yeni kod üret
-            const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
-            sessionStorage.setItem('resetCode', resetCode);
-            
-            alert(`Yeni şifre sıfırlama kodu: ${resetCode}\n\nBu kodu modal'daki forma girin.`);
-            
-            if (auth) {
-                auth.showModalSuccess('Yeni kod gönderildi!');
-            }
-        }
-        
         function showLoginPage() { if (auth) { auth.showLoginPage(); } }
 
 function handleRegisterSubmit(e) { e.preventDefault(); if (auth) { auth.handleRegister(e); } return false; }
@@ -4044,13 +3754,6 @@ function logout() { if (auth) { auth.logout(); } }
         let auth;
         document.addEventListener('DOMContentLoaded', function() {
             auth = new AuthSystem();
-            
-            // Modal dışına tıklama ile kapatma
-            document.getElementById('forgot-password-modal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeForgotPasswordModal();
-                }
-            });
         });
         
         // Cikis fonksiyonu (ana uygulamada kullanilabilir)
@@ -4070,5 +3773,34 @@ function logout() { if (auth) { auth.logout(); } }
             }
         }
     </script>
+    <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBKBEBXJmSlqLCEYUNL4dblRJErWyBreFE",
+  authDomain: "yksasistan-92c9f.firebaseapp.com",
+  projectId: "yksasistan-92c9f",
+  storageBucket: "yksasistan-92c9f.firebasestorage.app",
+  messagingSenderId: "440445317741",
+  appId: "1:440445317741:web:c3070279b5af3dc90bc564",
+  measurementId: "G-CH80DWJ89E"
+};
+
+const app = initializeApp(firebaseConfig);
+const firebaseAuth = getAuth(app);
+
+window.sifremiUnuttum = function () {
+  const email = prompt("Mail adresini gir:");
+
+  sendPasswordResetEmail(firebaseAuth, email)
+    .then(() => {
+      alert("Şifre sıfırlama maili gönderildi.");
+    })
+    .catch((error) => {
+      alert("Hata: " + error.message);
+    });
+};
+</script>
 </body>
 </html>
