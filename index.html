@@ -41,6 +41,32 @@
             --ayt: #8b5cf6; /* AYT sınav tipi rengi - ileri eğitim vurgusu için */
             --safe-area-inset-top: env(safe-area-inset-top, 0px); /* iOS üst güvenli alan */
             --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px); /* iOS alt güvenli alan */
+            
+            /* Light Mode Variables */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8f9fa;
+            --bg-tertiary: #e9ecef;
+            --text-primary: #212529;
+            --text-secondary: #6c757d;
+            --text-muted: #adb5bd;
+            --border-color: #dee2e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --card-bg: #ffffff;
+            --header-bg: linear-gradient(135deg, #3003fa, #f8f9fa);
+        }
+
+        /* Dark Mode Variables */
+        [data-theme="dark"] {
+            --bg-primary: #1a1a1a;
+            --bg-secondary: #2d2d2d;
+            --bg-tertiary: #404040;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --text-muted: #808080;
+            --border-color: #404040;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --card-bg: #2d2d2d;
+            --header-bg: linear-gradient(135deg, #0f0f23, #2d2d2d);
         }
         
         /* Genel sayfa stilleri - Tüm elementler için temel reset ve font ayarları */
@@ -54,11 +80,12 @@
         
         /* Sayfa gövdesi stilleri - Ana sayfa arka planı ve genel düzen */
         body {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); /* Beyaz gradient arka plan */
-            color: var(--dark); /* Koyu metin rengi */
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
             line-height: 1.6;
             min-height: 100vh;
             padding: var(--safe-area-inset-top) 0 var(--safe-area-inset-bottom) 0; /* iOS güvenli alan desteği */
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
         /* Ana konteyner - Sayfa içeriğini ortalar ve maksimum genişlik ayarlar */
@@ -72,14 +99,15 @@
         header {
             text-align: center;
             padding: 20px 15px;
-            background: linear-gradient(135deg, #3003fa, #f8f9fa); /* Beyaz gradient */
-            color: var(--dark); /* Koyu metin rengi */
+            background: var(--header-bg);
+            color: var(--text-primary);
             border-radius: 12px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px var(--shadow-color);
             position: relative;
             overflow: hidden;
             align-items: center;
+            transition: background 0.3s ease, color 0.3s ease;
         }
         
         .loading-logo {
@@ -177,15 +205,16 @@
         
         /* Geri sayım konteyneri - Sınav tarihine kalan süreyi gösterir */
         .countdown-container {
-            background-color: #fcfcfc; /* Beyaz arka plan */
+            background-color: var(--card-bg);
             padding: 20px 15px;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px var(--shadow-color);
             margin-bottom: 20px;
             text-align: center;
             position: relative;
             overflow: hidden;
-            border: 1px solid #e9ecef; /* İnce gri kenarlık */
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s ease;
         }
         
         .countdown-container::after {
@@ -246,12 +275,12 @@
         
         /* Ana kartlar - Hedefler, çalışma planı gibi bölümler için */
         .card {
-            background-color: #ffffff; /* Beyaz arka plan */
+            background-color: var(--card-bg);
             border-radius: 18px;
             padding: 24px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-            transition: transform 0.3s;
-            border: 1px solid #e9ecef; /* İnce gri kenarlık */
+            box-shadow: 0 8px 24px var(--shadow-color);
+            transition: transform 0.3s, background-color 0.3s ease;
+            border: 1px solid var(--border-color);
             min-height: 420px; /* Eşit yükseklik için minimum yükseklik */
             display: flex;
             flex-direction: column;
@@ -1677,6 +1706,97 @@ html, body {
         font-size: 1rem;
     }
 }
+
+/* Dark Mode Toggle Button */
+.dark-mode-toggle {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    color: white;
+    font-size: 1.2rem;
+}
+
+.dark-mode-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.dark-mode-toggle:active {
+    transform: scale(0.95);
+}
+
+/* Dark mode için giriş formu stilleri */
+[data-theme="dark"] .login-container {
+    background: linear-gradient(135deg, #0f0f23, #1a1a1a);
+}
+
+[data-theme="dark"] .login-card {
+    background: var(--card-bg);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-group input {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-group input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.2);
+}
+
+[data-theme="dark"] .checkbox-container {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .forgot-password {
+    color: var(--primary);
+}
+
+[data-theme="dark"] .register-link p {
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .register-link a {
+    color: var(--primary);
+}
+
+/* Mobil Uyumluluk */
+@media (max-width: 768px) {
+    .login-card {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+    
+    .login-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .form-group input {
+        padding: 12px;
+    }
+    
+    .login-btn {
+        padding: 12px;
+        font-size: 1rem;
+    }
+    
+    .dark-mode-toggle {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+    }
+}
     </style>
 </head>
 <body>
@@ -1773,6 +1893,11 @@ html, body {
         <!-- Ana sayfa içeriði -->
     <div class="container main-page">
         <header>
+            <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
+                <button id="dark-mode-toggle" class="dark-mode-toggle" onclick="toggleDarkMode()" title="Karanlık Mod">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+            </div>
             <h1><i class="fas fa-graduation-cap"></i> YKS Asistaný</h1>
             <p class="header-subtitle">20 Haziran 2026, 10:15'e kadar olan yolculuðunuz</p>
             <div class="exam-info">
@@ -3871,6 +3996,40 @@ window.sifremiUnuttum = function () {
       alert("Hata: " + error.message);
     });
 };
+
+        // Dark Mode Toggle Function
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            const currentTheme = html.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                html.removeAttribute('data-theme');
+                themeIcon.className = 'fas fa-moon';
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-sun';
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Load saved theme on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme');
+            const themeIcon = document.getElementById('theme-icon');
+            
+            if (savedTheme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                if (themeIcon) {
+                    themeIcon.className = 'fas fa-sun';
+                }
+            } else {
+                if (themeIcon) {
+                    themeIcon.className = 'fas fa-moon';
+                }
+            }
+        });
 </script>
 </body>
 </html>
