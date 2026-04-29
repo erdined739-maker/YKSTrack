@@ -3495,10 +3495,31 @@ if ("serviceWorker" in navigator) {
             constructor() {
                 this.users = this.loadUsers();
                 this.currentUser = this.getCurrentUser();
+                this.auth = null;
+                this.initFirebaseAuth();
                 this.init();
             }
             
-                        
+            initFirebaseAuth() {
+                // Firebase Auth'u başlat - global firebaseAuth değişkenini kullan
+                if (window.firebaseAuth) {
+                    this.auth = window.firebaseAuth;
+                    
+                    // Firebase Auth state değiştiğinde
+                    this.auth.onAuthStateChanged((user) => {
+                        if (user) {
+                            // Kullanıcı giriş yaptı
+                            this.currentUser = user;
+                            this.showMainApp();
+                        } else {
+                            // Kullanıcı çıkış yaptı
+                            this.currentUser = null;
+                            this.showLoginPage();
+                        }
+                    });
+                }
+            }
+            
             init() {
                 // Sayfa yüklendiğinde kontrol et
                 if (this.currentUser) {
@@ -3551,39 +3572,54 @@ if ("serviceWorker" in navigator) {
             
             handleLogin(e) {
                 e.preventDefault();
-                const email = document.getElementById('email').value;
-                const password = document.getElementById('password').value;
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value.trim();
                 const rememberMe = document.getElementById('remember-me').checked;
                 
-                // Kullanıcı bul
-                const user = this.users.find(u => u.email === email);
-                
-                if (!user) {
-                    this.showError('E-posta veya sifre hatali!');
-                    return;
+                // Firebase ile giriş yap
+                if (this.auth) {
+                    this.auth.signInWithEmailAndPassword(email, password)
+                        .then((userCredential) => {
+                            // Giriş başarılı
+                            const user = userCredential.user;
+                            this.saveCurrentUser(user, rememberMe);
+                            this.showSuccess('Giris basarili! Yonlendiriliyorsunuz...');
+                            
+                            setTimeout(() => {
+                                this.showMainApp();
+                            }, 1500);
+                        })
+                        .catch((error) => {
+                            let errorMessage = 'Giris hatasi: ';
+                            switch(error.code) {
+                                case 'auth/user-not-found':
+                                    errorMessage += 'Kullanıcı bulunamadı!';
+                                    break;
+                                case 'auth/wrong-password':
+                                    errorMessage += 'Sifre hatalı!';
+                                    break;
+                                case 'auth/invalid-email':
+                                    errorMessage += 'Gecersiz e-posta adresi!';
+                                    break;
+                                case 'auth/user-disabled':
+                                    errorMessage += 'Hesap devre dışı!';
+                                    break;
+                                default:
+                                    errorMessage += error.message;
+                            }
+                            this.showError(errorMessage);
+                        });
+                } else {
+                    this.showError('Firebase auth yüklenmedi!');
                 }
-                
-                // Basit şifre kontrolü (gerçek uygulamada hash'lenmiþ olmalý)
-                if (user.password !== password) {
-                    this.showError('E-posta veya sifre hatali!');
-                    return;
-                }
-                
-                // Giriş başarılı
-                this.saveCurrentUser(user, rememberMe);
-                this.showSuccess('Giris basarili! Yonlendiriliyorsunuz...');
-                
-                setTimeout(() => {
-                    this.showMainApp();
-                }, 1500);
             }
             
             handleRegister(e) {
                 e.preventDefault();
                 const name = document.getElementById('register-name').value;
-                const email = document.getElementById('register-email').value;
-                const password = document.getElementById('register-password').value;
-                const confirmPassword = document.getElementById('register-confirm-password').value;
+                const email = document.getElementById('register-email').value.trim();
+                const password = document.getElementById('register-password').value.trim();
+                const confirmPassword = document.getElementById('register-confirm-password').value.trim();
                 
                 // Validasyon
                 if (password !== confirmPassword) {
@@ -3596,42 +3632,71 @@ if ("serviceWorker" in navigator) {
                     return;
                 }
                 
-                // E-posta kontrolü
-                if (this.users.find(u => u.email === email)) {
-                    this.showError('Bu e-posta zaten kayitli!');
-                    return;
+                // Firebase ile kayıt ol
+                if (this.auth) {
+                    this.auth.createUserWithEmailAndPassword(email, password)
+                        .then((userCredential) => {
+                            // Kullanıcı başarıyla oluşturuldu
+                            const user = userCredential.user;
+                            
+                            // Kullanıcı adını güncelle
+                            user.updateProfile({
+                                displayName: name
+                            }).then(() => {
+                                this.showSuccess('Kayit basarili! Giris yapabilirsiniz.');
+                                
+                                // Formu temizle
+                                document.getElementById('register-form').reset();
+                                
+                                // Giriş sayfasına yönlendir
+                                setTimeout(() => {
+                                    this.showLoginPage();
+                                }, 1500);
+                            }).catch((error) => {
+                                this.showError('Isim güncellenemedi: ' + error.message);
+                            });
+                        })
+                        .catch((error) => {
+                            let errorMessage = 'Kayit hatasi: ';
+                            switch(error.code) {
+                                case 'auth/email-already-in-use':
+                                    errorMessage += 'Bu e-posta zaten kayitli!';
+                                    break;
+                                case 'auth/invalid-email':
+                                    errorMessage += 'Gecersiz e-posta adresi!';
+                                    break;
+                                case 'auth/weak-password':
+                                    errorMessage += 'Sifre çok zayıf!';
+                                    break;
+                                default:
+                                    errorMessage += error.message;
+                            }
+                            this.showError(errorMessage);
+                        });
+                } else {
+                    this.showError('Firebase auth yüklenmedi!');
                 }
-                
-                // Yeni kullanici
-                const newUser = {
-                    id: Date.now().toString(),
-                    name: name,
-                    email: email,
-                    password: password, // Gerçek uygulamada hash'lenmeli
-                    createdAt: new Date().toISOString()
-                };
-                
-                this.users.push(newUser);
-                this.saveUsers();
-                
-                this.showSuccess('Kayit basarili! Giris yapabilirsiniz.');
-                
-                // Formu temizle
-                document.getElementById('register-form').reset();
-                
-                // Giriş sayfasına yönlendir
-                setTimeout(() => {
-                    this.showLoginPage();
-                }, 1500);
             }
             
             logout() {
-                // Her iki storage'dan da temizle
-                localStorage.removeItem('yksCurrentUser');
-                localStorage.removeItem('yksRememberMe');
-                sessionStorage.removeItem('yksCurrentUser');
-                this.currentUser = null;
-                this.showLoginPage();
+                // Firebase ile çıkış yap
+                if (this.auth) {
+                    this.auth.signOut()
+                        .then(() => {
+                            // Çıkış başarılı
+                            this.currentUser = null;
+                            this.showLoginPage();
+                        })
+                        .catch((error) => {
+                            console.error('Çıkış hatası:', error);
+                            this.currentUser = null;
+                            this.showLoginPage();
+                        });
+                } else {
+                    // Manuel çıkış
+                    this.currentUser = null;
+                    this.showLoginPage();
+                }
             }
             
             showLoginPage() {
@@ -3662,7 +3727,8 @@ if ("serviceWorker" in navigator) {
                 // Ana sayfada kullanıcı bilgisini göster
                 const header = document.querySelector('header p.header-subtitle');
                 if (header && this.currentUser) {
-                    header.textContent = `Hoş geldin, ${this.currentUser.name}! 20 Haziran 2026, 10:15'e kadar olan yolculuğunuz`;
+                    const userName = this.currentUser.displayName || this.currentUser.email || 'Kullanıcı';
+                    header.textContent = `Hoş geldin, ${userName}! 20 Haziran 2026, 10:15'e kadar olan yolculuğunuz`;
                 }
             }
             
@@ -3790,6 +3856,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const firebaseAuth = getAuth(app);
+
+// Firebase auth'u global olarak ata
+window.firebaseAuth = firebaseAuth;
 
 window.sifremiUnuttum = function () {
   const email = prompt("Mail adresini gir:");
