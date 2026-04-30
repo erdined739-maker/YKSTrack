@@ -8,7 +8,7 @@
     <!-- Karakter kodlaması UTF-8 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <!-- Mobil cihazlar için responsive tasarım ayarı -->
-    <title>YKS Asistanı</title>
+    <title>NETVORA</title>
     <!-- Sayfa başlığı -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Font Awesome ikon kütüphanesi -->
@@ -106,13 +106,131 @@
             backdrop-filter: blur(10px);
         }
 
+        .auth-logo {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .auth-logo-mark {
+            width: 90px;
+            height: 90px;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 2.4rem;
+            font-weight: 800;
+            box-shadow: 0 18px 50px rgba(102, 126, 234, 0.25);
+            border: 3px solid rgba(255,255,255,0.36);
+            text-transform: uppercase;
+        }
+
+        .auth-logo-text {
+            color: #343a40;
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .dashboard-logo {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            border-radius: 18px;
+            padding: 10px 16px;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.12);
+            font-size: 0.95rem;
+            font-weight: 700;
+            border: 1px solid rgba(102,126,234,0.15);
+        }
+
+        .dashboard-logo span {
+            display: inline-block;
+            color: #667eea;
+            margin-right: 6px;
+        }
+
+        .main-brand {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .main-brand .brand-mark {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 800;
+            box-shadow: 0 8px 20px rgba(102,126,234,0.18);
+        }
+
+        .main-brand .brand-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            color: #2d3b6f;
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .main-brand .brand-text small {
+            font-size: 0.78rem;
+            color: #6c757d;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .auth-logo {
+                margin-bottom: 18px;
+            }
+
+            .auth-logo-mark {
+                width: 76px;
+                height: 76px;
+                font-size: 2rem;
+            }
+
+            .dashboard-logo {
+                top: 12px;
+                right: 12px;
+                padding: 8px 14px;
+                font-size: 0.9rem;
+            }
+
+            .main-brand {
+                gap: 10px;
+                margin-bottom: 14px;
+            }
+
+            .main-brand .brand-mark {
+                width: 42px;
+                height: 42px;
+            }
+        }
+
         @keyframes pulse {
-            0%, 100% { 
-                transform: scale(1); 
+            0%, 100% {
+                transform: scale(1);
                 opacity: 1;
             }
-            50% { 
-                transform: scale(1.05); 
+            50% {
+                transform: scale(1.05);
                 opacity: 0.9;
             }
         }
@@ -1834,12 +1952,16 @@ html, body {
     <!-- Giriş Sayfası -->
     <div id="login-page" class="login-container">
         <div class="login-card">
+            <div class="auth-logo">
+                <div class="auth-logo-mark">N</div>
+                <div class="auth-logo-text">NETVORA</div>
+            </div>
             <div class="login-header">
-                <h1><i class="fas fa-graduation-cap"></i> YKS Asistanı</h1>
+                <h1><i class="fas fa-graduation-cap"></i> NETVORA</h1>
                 <p>Hesabınıza giriş yapın</p>
             </div>
             
-            <form id="login-form" class="login-form">
+            <form id="login-form" class="login-form" onsubmit="handleLoginSubmit(event); return false;">
                 <div class="form-group">
                     <label for="email"><i class="fas fa-envelope"></i> E-posta</label>
                     <input type="email" id="email" name="email" placeholder="ornek@email.com" required>
@@ -1876,12 +1998,16 @@ html, body {
     <!-- Kayıt Sayfası -->
     <div id="register-page" class="login-container" style="display: none;">
         <div class="login-card">
+            <div class="auth-logo">
+                <div class="auth-logo-mark">N</div>
+                <div class="auth-logo-text">NETVORA</div>
+            </div>
             <div class="login-header">
                 <h1><i class="fas fa-user-plus"></i> Kayit Ol</h1>
                 <p>Yeni hesap olusturun</p>
             </div>
             
-            <form id="register-form" class="login-form" onsubmit="handleRegisterSubmit(event); return false;">
+            <form id="register-form" class="login-form">
                 <div class="form-group">
                     <label for="register-name"><i class="fas fa-user"></i> Ad Soyad</label>
                     <input type="text" id="register-name" name="name" placeholder="Adinizi soyadinizi girin" required>
@@ -1908,7 +2034,7 @@ html, body {
                     </button>
                 </div>
                 
-                <button type="submit" class="btn btn-primary login-btn">
+                <button type="submit" class="btn btn-primary login-btn" onclick="event.preventDefault(); handleRegisterSubmit(event);">
                     <i class="fas fa-user-plus"></i> Kayit Ol
                 </button>
                 
@@ -1924,7 +2050,15 @@ html, body {
         <!-- Ana sayfa içeriði -->
     <div class="container main-page">
         <header>
-            <h1><i class="fas fa-graduation-cap"></i> YKS Asistaný</h1>
+            <div class="main-brand">
+                <div class="brand-mark">N</div>
+                <div class="brand-text">
+                    NETVORA
+                    <small>Hedef odaklı çalışma merkezi</small>
+                </div>
+            </div>
+            <div class="dashboard-logo"><span>Logo1</span> Akıllı Panel</div>
+            <h1><i class="fas fa-graduation-cap"></i> NETVORA</h1>
             <p class="header-subtitle">20 Haziran 2026, 10:15'e kadar olan yolculuðunuz</p>
             <div class="exam-info">
                 <span class="exam-badge tyt-badge">TYT: 160 Dakika</span>
@@ -3641,7 +3775,7 @@ if ("serviceWorker" in navigator) {
     </div>
 
 <script>
-        // Giriþ Sistemi JavaScript
+        // Giriş Sistemi JavaScript
         class AuthSystem {
             constructor() {
                 this.users = this.loadUsers();
@@ -3705,27 +3839,38 @@ if ("serviceWorker" in navigator) {
                 const password = document.getElementById('password').value;
                 const rememberMe = document.getElementById('remember-me').checked;
                 
-                // Kullanıcı bul
-                const user = this.users.find(u => u.email === email);
-                
-                if (!user) {
-                    this.showError('E-posta veya sifre hatali!');
-                    return;
-                }
-                
-                // Basit şifre kontrolü (gerçek uygulamada hash'lenmiþ olmalý)
-                if (user.password !== password) {
-                    this.showError('E-posta veya sifre hatali!');
-                    return;
-                }
-                
-                // Giriş başarılı
-                this.saveCurrentUser(user, rememberMe);
-                this.showSuccess('Giris basarili! Yonlendiriliyorsunuz...');
-                
-                setTimeout(() => {
-                    this.showMainApp();
-                }, 1500);
+                // Firebase ile giriş yap
+                signInWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        // Giriş başarılı
+                        const user = userCredential.user;
+                        this.saveCurrentUser(user, rememberMe);
+                        this.showSuccess('Giriş başarılı! Yönlendiriliyorsunuz...');
+                        
+                        setTimeout(() => {
+                            this.showMainApp();
+                        }, 1500);
+                    })
+                    .catch((error) => {
+                        let errorMessage = 'Giriş hatası: ';
+                        switch(error.code) {
+                            case 'auth/user-not-found':
+                                errorMessage += 'Kullanıcı bulunamadı!';
+                                break;
+                            case 'auth/wrong-password':
+                                errorMessage += 'Şifre hatalı!';
+                                break;
+                            case 'auth/invalid-email':
+                                errorMessage += 'Geçersiz e-posta adresi!';
+                                break;
+                            case 'auth/user-disabled':
+                                errorMessage += 'Hesap devre dışı!';
+                                break;
+                            default:
+                                errorMessage += error.message;
+                        }
+                        this.showError(errorMessage);
+                    });
             }
             
             handleRegister(e) {
@@ -3737,51 +3882,70 @@ if ("serviceWorker" in navigator) {
                 
                 // Validasyon
                 if (password !== confirmPassword) {
-                    this.showError('Sifreler eslesmiyor!');
+                    this.showError('Şifreler eşleşmiyor!');
                     return;
                 }
                 
                 if (password.length < 6) {
-                    this.showError('Sifre en az 6 karakter olmali!');
+                    this.showError('Şifre en az 6 karakter olmalı!');
                     return;
                 }
                 
-                // E-posta kontrolü
-                if (this.users.find(u => u.email === email)) {
-                    this.showError('Bu e-posta zaten kayitli!');
-                    return;
-                }
-                
-                // Yeni kullanici
-                const newUser = {
-                    id: Date.now().toString(),
-                    name: name,
-                    email: email,
-                    password: password, // Gerçek uygulamada hash'lenmeli
-                    createdAt: new Date().toISOString()
-                };
-                
-                this.users.push(newUser);
-                this.saveUsers();
-                
-                this.showSuccess('Kayit basarili! Giris yapabilirsiniz.');
-                
-                // Formu temizle
-                document.getElementById('register-form').reset();
-                
-                // Giriş sayfasına yönlendir
-                setTimeout(() => {
-                    this.showLoginPage();
-                }, 1500);
+                // Firebase ile kayıt ol
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        // Kullanıcı başarıyla oluşturuldu
+                        const user = userCredential.user;
+                        
+                        // Kullanıcı adını güncelle
+                        user.updateProfile({
+                            displayName: name
+                        }).then(() => {
+                            this.showSuccess(`Hoş geldin ${name}! Kaydınız tamamlandı. Giriş yapabilirsiniz.`);
+                            
+                            // Formu temizle
+                            document.getElementById('register-form').reset();
+                            
+                            // Giriş sayfasına yönlendir
+                            setTimeout(() => {
+                                this.showLoginPage();
+                            }, 1500);
+                        }).catch((error) => {
+                            this.showError('İsim güncellenemedi: ' + error.message);
+                        });
+                    })
+                    .catch((error) => {
+                        let errorMessage = 'Kayıt hatası: ';
+                        switch(error.code) {
+                            case 'auth/email-already-in-use':
+                                errorMessage += 'Bu e-posta zaten kayıtlı!';
+                                break;
+                            case 'auth/invalid-email':
+                                errorMessage += 'Geçersiz e-posta adresi!';
+                                break;
+                            case 'auth/weak-password':
+                                errorMessage += 'Şifre çok zayıf!';
+                                break;
+                            default:
+                                errorMessage += error.message;
+                        }
+                        this.showError(errorMessage);
+                    });
             }
             
             logout() {
-                // Her iki storage'dan da temizle
-                localStorage.removeItem('yksCurrentUser');
-                localStorage.removeItem('yksRememberMe');
-                sessionStorage.removeItem('yksCurrentUser');
-                this.currentUser = null;
-                this.showLoginPage();
+                // Firebase ile çıkış yap
+                signOut(auth)
+                    .then(() => {
+                        // Çıkış başarılı
+                        this.currentUser = null;
+                        this.showLoginPage();
+                    })
+                    .catch((error) => {
+                        console.error('Çıkış hatası:', error);
+                        this.currentUser = null;
+                        this.showLoginPage();
+                    });
             }
             
             showLoginPage() {
@@ -3822,8 +3986,15 @@ if ("serviceWorker" in navigator) {
                 errorDiv.className = 'error-message';
                 errorDiv.textContent = message;
                 
-                const activeForm = document.querySelector('.login-form');
-                activeForm.insertBefore(errorDiv, activeForm.firstChild);
+                const forms = Array.from(document.querySelectorAll('.login-form'));
+                const activeForm = forms.find(form => {
+                    const page = form.closest('#login-page, #register-page');
+                    return page && page.style.display !== 'none';
+                }) || forms[0];
+                
+                if (activeForm) {
+                    activeForm.insertBefore(errorDiv, activeForm.firstChild);
+                }
             }
             
             showSuccess(message) {
@@ -3832,8 +4003,15 @@ if ("serviceWorker" in navigator) {
                 successDiv.className = 'success-message';
                 successDiv.textContent = message;
                 
-                const activeForm = document.querySelector('.login-form');
-                activeForm.insertBefore(successDiv, activeForm.firstChild);
+                const forms = Array.from(document.querySelectorAll('.login-form'));
+                const activeForm = forms.find(form => {
+                    const page = form.closest('#login-page, #register-page');
+                    return page && page.style.display !== 'none';
+                }) || forms[0];
+                
+                if (activeForm) {
+                    activeForm.insertBefore(successDiv, activeForm.firstChild);
+                }
             }
             
             clearMessages() {
