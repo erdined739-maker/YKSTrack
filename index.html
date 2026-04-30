@@ -612,45 +612,8 @@
         .tyt-active {
             border-color: var(--tyt);
             background-color: rgba(114, 9, 183, 0.1);
-        }
         
-        .ayt-active {
-            border-color: var(--ayt);
-            background-color: rgba(247, 37, 133, 0.1);
-        }
         
-        .resource-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-        
-        .delete-btn {
-            background: none;
-            border: none;
-            color: var(--danger);
-            cursor: pointer;
-            font-size: 1rem;
-            transition: transform 0.2s;
-            min-height: 44px;
-            min-width: 44px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .delete-btn:hover {
-            transform: scale(1.2);
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
             justify-content: center;
@@ -2057,7 +2020,7 @@ html, body {
                     <small>Hedef odaklı çalışma merkezi</small>
                 </div>
             </div>
-            <div class="dashboard-logo"><span>Logo1</span> Akıllı Panel</div>
+            <div class="dashboard-logo"><img src="logo1.png" alt="Logo" style="width: 30px; height: 30px; margin-right: 8px; border-radius: 50%;"> Akıllı Panel</div>
             <h1><i class="fas fa-graduation-cap"></i> NETVORA</h1>
             <p class="header-subtitle">20 Haziran 2026, 10:15'e kadar olan yolculuðunuz</p>
             <div class="exam-info">
@@ -3775,13 +3738,14 @@ if ("serviceWorker" in navigator) {
     </div>
 
 <script>
-        // Giriş Sistemi JavaScript
-        class AuthSystem {
-            constructor() {
-                this.users = this.loadUsers();
-                this.currentUser = this.getCurrentUser();
-                this.init();
-            }
+    // Giriş Sistemi JavaScript
+    class AuthSystem {
+        constructor() {
+            this.users = this.loadUsers();
+            this.currentUser = this.getCurrentUser();
+            this.auth = window.firebaseAuth;
+            this.init();
+        }
             
             init() {
                 // Sayfa yüklendiğinde kontrol et
@@ -3840,7 +3804,7 @@ if ("serviceWorker" in navigator) {
                 const rememberMe = document.getElementById('remember-me').checked;
                 
                 // Firebase ile giriş yap
-                signInWithEmailAndPassword(auth, email, password)
+                signInWithEmailAndPassword(this.auth, email, password)
                     .then((userCredential) => {
                         // Giriş başarılı
                         const user = userCredential.user;
@@ -3892,7 +3856,7 @@ if ("serviceWorker" in navigator) {
                 }
                 
                 // Firebase ile kayıt ol
-                createUserWithEmailAndPassword(auth, email, password)
+                createUserWithEmailAndPassword(this.auth, email, password)
                     .then((userCredential) => {
                         // Kullanıcı başarıyla oluşturuldu
                         const user = userCredential.user;
@@ -3935,7 +3899,7 @@ if ("serviceWorker" in navigator) {
             
             logout() {
                 // Firebase ile çıkış yap
-                signOut(auth)
+                signOut(this.auth)
                     .then(() => {
                         // Çıkış başarılı
                         this.currentUser = null;
@@ -4022,16 +3986,16 @@ if ("serviceWorker" in navigator) {
         
         // Sayfa geçiş fonksiyonları
         function showRegisterPage() {
-            if (auth) {
-                auth.showRegisterPage();
+            if (window.authSystem) {
+                window.authSystem.showRegisterPage();
             }
         }
         
-        function showLoginPage() { if (auth) { auth.showLoginPage(); } }
+        function showLoginPage() { if (window.authSystem) { window.authSystem.showLoginPage(); } }
 
-function handleRegisterSubmit(e) { e.preventDefault(); if (auth) { auth.handleRegister(e); } return false; }
+function handleRegisterSubmit(e) { e.preventDefault(); if (window.authSystem) { window.authSystem.handleRegister(e); } return false; }
 
-function logout() { if (auth) { auth.logout(); } }
+function logout() { if (window.authSystem) { window.authSystem.logout(); } }
 
 // Kaynak ekleme fonksiyonu
 function addResource() {
@@ -4044,12 +4008,15 @@ function addResource() {
     const resourcesList = document.getElementById('resources-list');
     const listItem = document.createElement('li');
     
+    const bgColor = currentResourceExamType === 'tyt' ? 'var(--tyt)' : 'var(--ayt)';
+    const examType = currentResourceExamType.toUpperCase();
+    
     listItem.innerHTML = `
         <div class="resource-item">
             <div>
                 <strong>${resourceType}</strong> - ${resourceName} (${resourceSubject}) 
-                <span class="badge" style="background: ${currentResourceExamType === 'tyt' ? 'var(--tyt)' : 'var(--ayt)'}; color: white; padding: 2px 6px; border-radius: 12px; font-size: 0.7rem;">
-                    ${currentResourceExamType.toUpperCase()}
+                <span class="badge" style="background: ${bgColor}; color: white; padding: 2px 6px; border-radius: 12px; font-size: 0.7rem;">
+                    ${examType}
                 </span>
             </div>
             <button class="delete-btn" onclick="removeResource(this)"><i class="fas fa-trash"></i></button>
